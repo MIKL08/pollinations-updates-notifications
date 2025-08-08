@@ -1,4 +1,4 @@
-name: Notify on file change
+name: Notify Pollinations models changes
 
 on:
   schedule:
@@ -6,56 +6,107 @@ on:
   workflow_dispatch:
 
 jobs:
-  sync-and-check:
+  check-models:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-
-      - name: Sync Fork (preserve workflows)
+      - name: Compare models
+        id: compare
+        shell: bash
         run: |
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
-          
-          mkdir -p /tmp/backup
-          cp -r .github/workflows/* /tmp/backup/ 2>/dev/null || true
-          
-          git remote add upstream https://github.com/pollinations/pollinations.git
-          git fetch upstream
-          git reset --hard upstream/master
-          
-          mkdir -p .github/workflows
-          cp -r /tmp/backup/* .github/workflows/ 2>/dev/null || true
-          
-          git add .
-          git commit -m "Sync with upstream + preserve workflows" || echo "No changes to commit"
-          
-          git push --force origin master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Check file changes
-        id: file_check
-        run: |
-          git pull
-          CHANGED=$(git diff --name-only HEAD^ HEAD 2>/dev/null | grep "text.pollinations.ai/availableModels.js" || true)
-          if [ -n "$CHANGED" ]; then
-            echo "changed=true" >> $GITHUB_OUTPUT
-          else
-            echo "changed=false" >> $GITHUB_OUTPUT
+          set -euo pipefail
+          MODELS_URL="https://text.pollinations.ai/models"
+          TMP_FILE="/tmp/models.json"
+          MSG_FILE="/tmp/message.txt"
+          curl -sS --fail -A "github-actions-bot" "$MODELS_URL" -o "$TMP_FILE"
+          python3 - << 'PY'
+import json, sys
+from pathlib import Path
+tmp = Path("/tmp/models.json")
+try:
+    data = json.loads(tmp.read_text(encoding="utf-8"))
+except Exception as e:
+    print(f"::error::Failed to parse JSON: {e}")
+    sys.exit(1)
+if not isinstance(data, list):
+    print("::error::Unexpected JSON format: expected a list")
+    sys.exit(1)
+def normalize_model(m):
+    m = dict(m)
+    for key in ["input_modalities","output_modalities","voices","tools"]:
+        if key in m and isinstance(m[key], list):
+            m[key] = sorted(m[key])
+    return m
+normalized = [normalize_model(m) for m in data]
+normalized.sort(key=lambda x: str(x.get("name", "")))
+Path("/tmp/models.normalized.json").write_text(
+    json.dumps(normalized, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+    encoding="utf-8",
+)
+PY
+          if [ ! -f "pollinations_models.json" ]; then
+            cp /tmp/models.normalized.json pollinations_models.json
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "initialized=true" >> "$GITHUB_OUTPUT"
+            echo "First snapshot initialized. No notification sent." > "$MSG_FILE"
+            exit 0
           fi
+          python3 - << 'PY'
+import json
+from pathlib import Path
+prev = json.loads(Path("pollinations_models.json").read_text(encoding="utf-8"))
+curr = json.loads(Path("/tmp/models.normalized.json").read_text(encoding="utf-8"))
+def to_map(items): return {str(i.get("name","")): i for i in items if i.get("name")}
+def diff_dicts(o, n):
+    return {k: {"old": o.get(k), "new": n.get(k)} for k in set(o) | set(n) if o.get(k) != n.get(k)}
+prev_map, curr_map = to_map(prev), to_map(curr)
+added = sorted(curr_map.keys() - prev_map.keys())
+removed = sorted(prev_map.keys() - curr_map.keys())
+common = sorted(prev_map.keys() & curr_map.keys())
+modified = {n: diff_dicts(prev_map[n], curr_map[n]) for n in common if diff_dicts(prev_map[n], curr_map[n])}
+has_changes = bool(added or removed or modified)
+Path("/tmp/changed.flag").write_text("true" if has_changes else "false", encoding="utf-8")
+lines = []
+if added:
+    lines.append("➕ Added models:")
+    for n in added:
+        m = curr_map[n]
+        lines.append(f"  - {n} (provider: {m.get('provider','?')}, tier: {m.get('tier','?')})")
+if removed:
+    lines.append("\n➖ Deleted models:")
+    for n in removed:
+        m = prev_map[n]
+        lines.append(f"  - {n} (provider: {m.get('provider','?')}, tier: {m.get('tier','?')})")
+if modified:
+    lines.append("\n♻️ Updated models:")
+    for n in sorted(modified):
+        lines.append(f"  - {n}:")
+        for k, ch in modified[n].items():
+            lines.append(f"      • {k}: {ch['old']} → {ch['new']}")
+if not has_changes:
+    lines.append("No changes found.")
+Path("/tmp/message.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
+if has_changes:
+    Path("pollinations_models.json").write_text(Path("/tmp/models.normalized.json").read_text(encoding="utf-8"), encoding="utf-8")
+PY
+          CHANGED=$(cat /tmp/changed.flag 2>/dev/null || echo false)
+          if [ "$CHANGED" = "true" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+          {
+            echo 'message<<EOF'
+            cat "$MSG_FILE"
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
 
       - name: Notify Telegram
-        if: steps.file_check.outputs.changed == 'true'
+        if: steps.compare.outputs.changed == 'true'
         uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
-            📢 File changed in repository!
-            
-            Repo: ${{ github.repository }}
-            File: text.pollinations.ai/availableModels.js
-            View changes: https://github.com/${{ github.repository }}/commits
+            📢 Updating the list of Pollinations models
+
+            ${{ steps.compare.outputs.message }}
