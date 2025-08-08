@@ -1,61 +1,218 @@
-name: Notify on file change
+name: Notify Pollinations models changes
 
 on:
   schedule:
     - cron: '0 * * * *'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
-  sync-and-check:
+  check-models:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
-      - name: Sync Fork (preserve workflows)
+      - name: Compare models and prepare outputs
+        id: compare
+        shell: bash
         run: |
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
-          
-          mkdir -p /tmp/backup
-          cp -r .github/workflows/* /tmp/backup/ 2>/dev/null || true
-          
-          git remote add upstream https://github.com/pollinations/pollinations.git
-          git fetch upstream
-          git reset --hard upstream/master
-          
-          mkdir -p .github/workflows
-          cp -r /tmp/backup/* .github/workflows/ 2>/dev/null || true
-          
-          git add .
-          git commit -m "Sync with upstream + preserve workflows" || echo "No changes to commit"
-          
-          git push --force origin master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          set -euo pipefail
 
-      - name: Check file changes
-        id: file_check
-        run: |
-          git pull
-          CHANGED=$(git diff --name-only HEAD^ HEAD 2>/dev/null | grep "text.pollinations.ai/availableModels.js" || true)
-          if [ -n "$CHANGED" ]; then
-            echo "changed=true" >> $GITHUB_OUTPUT
-          else
-            echo "changed=false" >> $GITHUB_OUTPUT
+          MODELS_URL="https://text.pollinations.ai/models"
+          DATA_DIR="data"
+          OUTPUT_FILE="$DATA_DIR/pollinations_models.json"
+          TMP_FILE="/tmp/models.json"
+          MSG_FILE="/tmp/message.txt"
+
+          mkdir -p "$DATA_DIR"
+
+          echo "Fetching models from $MODELS_URL ..."
+          curl -sS --fail -A "github-actions-bot" "$MODELS_URL" -o "$TMP_FILE"
+
+          # Validate JSON format as a list
+          python3 - << 'PY'
+import json, sys
+from pathlib import Path
+
+tmp = Path("/tmp/models.json")
+try:
+    data = json.loads(tmp.read_text(encoding="utf-8"))
+except Exception as e:
+    print(f"::error::Failed to parse JSON: {e}")
+    sys.exit(1)
+if not isinstance(data, list):
+    print("::error::Unexpected JSON format: expected a list")
+    sys.exit(1)
+
+# Normalize list ordering and internal keys for deterministic diffs
+
+def normalize_model(m):
+    m = dict(m)
+    for key in [
+        "input_modalities",
+        "output_modalities",
+        "voices",
+        "tools",
+    ]:
+        if key in m and isinstance(m[key], list):
+            m[key] = sorted(m[key])
+    return m
+
+normalized_current = [normalize_model(m) for m in data]
+normalized_current.sort(key=lambda x: str(x.get("name", "")))
+
+# Write normalized current to tmp (pretty)
+Path("/tmp/models.normalized.json").write_text(
+    json.dumps(normalized_current, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+    encoding="utf-8",
+)
+PY
+
+          # If no previous snapshot, initialize it (commit later) without notifying
+          if [ ! -f "$OUTPUT_FILE" ]; then
+            echo "Initializing models snapshot at $OUTPUT_FILE"
+            cp /tmp/models.normalized.json "$OUTPUT_FILE"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "initialized=true" >> "$GITHUB_OUTPUT"
+            {
+              echo "Инициализирован первый снимок моделей. Уведомление не отправляется."
+            } > "$MSG_FILE"
+            exit 0
           fi
 
+          # Load previous and compare using Python for structured diff
+          python3 - << 'PY'
+import json, sys
+from pathlib import Path
+
+output_file = Path("data/pollinations_models.json")
+current_file = Path("/tmp/models.normalized.json")
+message_file = Path("/tmp/message.txt")
+
+def to_map(items):
+    mapping = {}
+    for item in items:
+        name = str(item.get("name", ""))
+        if name:
+            mapping[name] = item
+    return mapping
+
+def diff_dicts(old, new):
+    changes = {}
+    keys = sorted(set(old.keys()) | set(new.keys()))
+    for k in keys:
+        ov = old.get(k, None)
+        nv = new.get(k, None)
+        if ov == nv:
+            continue
+        changes[k] = {"old": ov, "new": nv}
+    return changes
+
+prev = json.loads(output_file.read_text(encoding="utf-8"))
+curr = json.loads(current_file.read_text(encoding="utf-8"))
+
+prev_map = to_map(prev)
+curr_map = to_map(curr)
+
+prev_names = set(prev_map.keys())
+curr_names = set(curr_map.keys())
+
+added = sorted(list(curr_names - prev_names))
+removed = sorted(list(prev_names - curr_names))
+common = sorted(list(prev_names & curr_names))
+
+modified = {}
+for name in common:
+    changes = diff_dicts(prev_map[name], curr_map[name])
+    if changes:
+        modified[name] = changes
+
+has_changes = bool(added or removed or modified)
+
+# Write change flag for shell
+Path("/tmp/changed.flag").write_text("true" if has_changes else "false", encoding="utf-8")
+
+lines = []
+if added:
+    lines.append("➕ Добавлены модели:")
+    for n in added:
+        m = curr_map[n]
+        prov = m.get("provider", "?")
+        tier = m.get("tier", "?")
+        lines.append(f"  - {n} (provider: {prov}, tier: {tier})")
+
+if removed:
+    lines.append("\n➖ Удалены модели:")
+    for n in removed:
+        m = prev_map[n]
+        prov = m.get("provider", "?")
+        tier = m.get("tier", "?")
+        lines.append(f"  - {n} (provider: {prov}, tier: {tier})")
+
+if modified:
+    lines.append("\n♻️ Изменены модели:")
+    for n in sorted(modified.keys()):
+        lines.append(f"  - {n}:")
+        for key, ch in modified[n].items():
+            lines.append(f"      • {key}: {ch['old']} → {ch['new']}")
+
+if not has_changes:
+    lines.append("Изменений не обнаружено.")
+
+# Write message text
+message_file.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+# If changed, update snapshot file
+if has_changes:
+    output_file.write_text(current_file.read_text(encoding="utf-8"), encoding="utf-8")
+
+# Emit a small summary print to help logs
+print("CHANGED=", "true" if has_changes else "false")
+PY
+
+          # Determine changed flag from the log output by re-running a small check
+          CHANGED=$(cat /tmp/changed.flag 2>/dev/null || echo false)
+
+          if [ "$CHANGED" = "true" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          # Export multiline message to step output
+          {
+            echo 'message<<EOF'
+            cat "$MSG_FILE"
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Commit snapshot (init or changed)
+        if: steps.compare.outputs.changed == 'true' || steps.compare.outputs.initialized == 'true'
+        run: |
+          set -euo pipefail
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git add data/pollinations_models.json
+          git commit -m "Update Pollinations models snapshot" || echo "No changes to commit"
+          git push
+
       - name: Notify Telegram
-        if: steps.file_check.outputs.changed == 'true'
+        if: steps.compare.outputs.changed == 'true'
         uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
-            📢 File changed in repository!
-            
-            Repo: ${{ github.repository }}
-            File: text.pollinations.ai/availableModels.js
-            View changes: https://github.com/${{ github.repository }}/commits
+            📢 Обновление списка моделей Pollinations
+
+            Репозиторий: ${{ github.repository }}
+            Источник: https://text.pollinations.ai/models
+
+            ${{ steps.compare.outputs.message }}
+
+            Коммит: https://github.com/${{ github.repository }}/commits
