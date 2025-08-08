@@ -139,7 +139,7 @@ Path("/tmp/changed.flag").write_text("true" if has_changes else "false", encodin
 
 lines = []
 if added:
-    lines.append("➕ Добавлены модели:")
+    lines.append("➕ Added models:")
     for n in added:
         m = curr_map[n]
         prov = m.get("provider", "?")
@@ -147,7 +147,7 @@ if added:
         lines.append(f"  - {n} (provider: {prov}, tier: {tier})")
 
 if removed:
-    lines.append("\n➖ Удалены модели:")
+    lines.append("\n➖ Deleted models:")
     for n in removed:
         m = prev_map[n]
         prov = m.get("provider", "?")
@@ -155,14 +155,14 @@ if removed:
         lines.append(f"  - {n} (provider: {prov}, tier: {tier})")
 
 if modified:
-    lines.append("\n♻️ Изменены модели:")
+    lines.append("\n♻️ Updated models:")
     for n in sorted(modified.keys()):
         lines.append(f"  - {n}:")
         for key, ch in modified[n].items():
             lines.append(f"      • {key}: {ch['old']} → {ch['new']}")
 
 if not has_changes:
-    lines.append("Изменений не обнаружено.")
+    lines.append("No changes found.")
 
 # Write message text
 message_file.write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -208,11 +208,6 @@ PY
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
-            📢 Обновление списка моделей Pollinations
-
-            Репозиторий: ${{ github.repository }}
-            Источник: https://text.pollinations.ai/models
+            📢 Updating the list of Pollinations models
 
             ${{ steps.compare.outputs.message }}
-
-            Коммит: https://github.com/${{ github.repository }}/commits
