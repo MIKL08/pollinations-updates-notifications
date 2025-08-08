@@ -1,0 +1,61 @@
+name: Notify on file change
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+jobs:
+  sync-and-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Sync Fork (preserve workflows)
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          
+          mkdir -p /tmp/backup
+          cp -r .github/workflows/* /tmp/backup/ 2>/dev/null || true
+          
+          git remote add upstream https://github.com/pollinations/pollinations.git
+          git fetch upstream
+          git reset --hard upstream/master
+          
+          mkdir -p .github/workflows
+          cp -r /tmp/backup/* .github/workflows/ 2>/dev/null || true
+          
+          git add .
+          git commit -m "Sync with upstream + preserve workflows" || echo "No changes to commit"
+          
+          git push --force origin master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check file changes
+        id: file_check
+        run: |
+          git pull
+          CHANGED=$(git diff --name-only HEAD^ HEAD 2>/dev/null | grep "text.pollinations.ai/availableModels.js" || true)
+          if [ -n "$CHANGED" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Notify Telegram
+        if: steps.file_check.outputs.changed == 'true'
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            📢 File changed in repository!
+            
+            Repo: ${{ github.repository }}
+            File: text.pollinations.ai/availableModels.js
+            View changes: https://github.com/${{ github.repository }}/commits
