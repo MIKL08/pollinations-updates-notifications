@@ -12,11 +12,16 @@ jobs:
   check-models:
     runs-on: ubuntu-latest
     steps:
+      - name: Get current date
+        id: date
+        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
       - name: Restore cache
+        id: cache
         uses: actions/cache@v3
         with:
           path: pollinations_models.json
-          key: models-cache
+          key: models-${{ steps.date.outputs.date }}-${{ hashFiles('pollinations_models.json') }}
 
       - name: Fetch models
         run: |
@@ -134,10 +139,11 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: Save cache
+        if: steps.compare.outputs.changed == 'true'
         uses: actions/cache@v3
         with:
           path: pollinations_models.json
-          key: models-cache
+          key: models-${{ steps.date.outputs.date }}-${{ hashFiles('pollinations_models.json') }}
 
       - name: Notify Telegram
         if: steps.compare.outputs.changed == 'true'
