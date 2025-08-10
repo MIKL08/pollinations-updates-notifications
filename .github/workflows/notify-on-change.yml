@@ -1,4 +1,4 @@
-name: Notify Pollinations models changes
+name: Pollinations Models Monitor
 
 on:
   schedule:
@@ -23,30 +23,118 @@ jobs:
           path: pollinations_models.json
           key: models-${{ steps.date.outputs.date }}-${{ hashFiles('pollinations_models.json') }}
 
-      - name: Fetch models
+      - name: Fetch models with retries
         id: fetch
         run: |
           set -euo pipefail
-          # Try up to 3 times with 10 second delay between attempts
           for i in {1..3}; do
             if curl -sS --fail -A "github-actions-bot" "https://text.pollinations.ai/models" -o /tmp/models.json; then
-              echo "success=true" >> $GITHUB_OUTPUT
+              echo "status=success" >> $GITHUB_OUTPUT
               exit 0
             fi
-            echo "Attempt $i failed, retrying in 10 seconds..."
+            echo "Attempt $i/3 failed"
             sleep 10
           done
-          echo "::error::Failed to fetch models after 3 attempts"
-          echo "success=false" >> $GITHUB_OUTPUT
+          echo "::error::POLLINATIONS API IS DOWN - Failed after 3 attempts"
+          echo "status=failure" >> $GITHUB_OUTPUT
           exit 1
 
       - name: Compare models
-        if: steps.fetch.outputs.success == 'true'
+        if: steps.fetch.outputs.status == 'success'
         id: compare
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          [Previous Python code remains exactly the same]
+          import json, sys
+          from pathlib import Path
+
+          tmp = Path("/tmp/models.json")
+          try:
+              data = json.loads(tmp.read_text(encoding="utf-8"))
+          except Exception as e:
+              print(f"::error::Failed to parse JSON: {e}")
+              sys.exit(1)
+          if not isinstance(data, list):
+              print("::error::Unexpected JSON format: expected a list")
+              sys.exit(1)
+
+          def normalize_model(m):
+              m = dict(m)
+              for key in ("input_modalities","output_modalities","voices","tools"):
+                  if key in m and isinstance(m[key], list):
+                      m[key] = sorted(m[key])
+              return m
+
+          normalized = [normalize_model(m) for m in data]
+          normalized.sort(key=lambda x: str(x.get("name","")))
+
+          curr_txt = json.dumps(normalized, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+
+          prev_path = Path("pollinations_models.json")
+          lines = []
+
+          if not prev_path.exists():
+              prev_path.write_text(curr_txt, encoding="utf-8")
+              Path("/tmp/changed.flag").write_text("false", encoding="utf-8")
+              Path("/tmp/message.txt").write_text("First snapshot initialized. No notification sent.\n", encoding="utf-8")
+              sys.exit(0)
+
+          prev = json.loads(prev_path.read_text(encoding="utf-8"))
+
+          def to_map(items):
+              return {str(i.get("name","")): i for i in items if i.get("name")}
+
+          prev_map = to_map(prev)
+          curr_map = to_map(normalized)
+
+          added = sorted(set(curr_map) - set(prev_map))
+          removed = sorted(set(prev_map) - set(curr_map))
+          common = sorted(set(prev_map) & set(curr_map))
+
+          modified = {}
+
+          def diff_dicts(o,n):
+              d={}
+              for k in sorted(set(o)|set(n)):
+                  ov=o.get(k); nv=n.get(k)
+                  if ov!=nv:
+                      d[k] = {"old":ov, "new":nv}
+              return d
+
+          for name in common:
+              d = diff_dicts(prev_map[name], curr_map[name])
+              if d:
+                  modified[name]=d
+
+          has_changes = bool(added or removed or modified)
+
+          if added:
+              lines.append("➕ Added models:")
+              for n in added:
+                  m=curr_map[n]
+                  lines.append(f"  - {n} (provider: {m.get('provider','?')}, tier: {m.get('tier','?')})")
+
+          if removed:
+              lines.append("\n➖ Deleted models:")
+              for n in removed:
+                  m=prev_map[n]
+                  lines.append(f"  - {n} (provider: {m.get('provider','?')}, tier: {m.get('tier','?')})")
+
+          if modified:
+              lines.append("\n♻️ Updated models:")
+              for n in sorted(modified):
+                  lines.append(f"  - {n}:")
+                  for k,ch in modified[n].items():
+                      lines.append(f"      • {k}: {ch['old']} → {ch['new']}")
+
+          if not has_changes:
+              lines.append("No changes found.")
+
+          Path("/tmp/message.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
+          Path("/tmp/changed.flag").write_text("true" if has_changes else "false", encoding="utf-8")
+
+          if has_changes:
+              prev_path.write_text(curr_txt, encoding="utf-8")
           PY
 
           CHANGED=$(cat /tmp/changed.flag 2>/dev/null || echo false)
@@ -69,23 +157,23 @@ jobs:
           path: pollinations_models.json
           key: models-${{ steps.date.outputs.date }}-${{ hashFiles('pollinations_models.json') }}
 
-      - name: Notify Telegram
+      - name: Notify model changes
         if: steps.compare.outputs.changed == 'true'
         uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
-            📢 Updating the list of Pollinations models
-
+            📢 Pollinations Models Update
             ${{ steps.compare.outputs.message }}
 
-      - name: Notify API failure
-        if: steps.fetch.outputs.success != 'true'
+      - name: Alert API failure
+        if: steps.fetch.outputs.status == 'failure'
         uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
-            ‼️ Failed to fetch Pollinations models
-            The API endpoint returned error after 3 attempts
+            ‼️ POLLINATIONS API BROKEN ‼️
+            Failed to fetch models after 3 attempts
+            The service may be down
