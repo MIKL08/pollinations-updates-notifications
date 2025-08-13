@@ -166,10 +166,10 @@ jobs:
       - name: Save to glot.io
         if: steps.compare.outputs.changed == 'true'
         run: |
-          CONTENT=$(cat pollinations_models.json)
-          PAYLOAD=$(jq -n \
+          PAYLOAD_FILE=$(mktemp)
+          jq -n \
             --arg title "$GLOT_SNIPPET_TITLE" \
-            --arg content "$CONTENT" \
+            --rawfile content pollinations_models.json \
             '{
               "language": "javascript",
               "title": $title,
@@ -178,12 +178,12 @@ jobs:
                 "name": "models.js",
                 "content": $content
               }]
-            }')
-          
+            }' > "$PAYLOAD_FILE"
+      
           curl -X PUT "https://glot.io/api/snippets/$GLOT_ID" \
             -H "Authorization: Token $GLOT_TOKEN" \
-            -H "Content-Type: application/json; charset=utf-8" \
-            -d "$PAYLOAD"
+            -H "Content-Type: application/json" \
+            --data-binary @"$PAYLOAD_FILE"
 
       - name: Notify model changes
         if: steps.compare.outputs.changed == 'true'
