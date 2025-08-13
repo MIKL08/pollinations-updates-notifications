@@ -174,7 +174,7 @@ jobs:
               "title": "$GLOT_SNIPPET_TITLE",
               "public": false,
               "files": [{
-                "name": "pollinations_models.js",
+                "name": "main.js",
                 "content": '"$(jq -c . pollinations_models.json)"'
               }]
             }'
