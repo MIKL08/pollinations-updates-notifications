@@ -8,6 +8,11 @@ on:
 permissions:
   contents: read
 
+env:
+  GLOT_TOKEN: ${{ secrets.GLOT_TOKEN }}
+  GLOT_ID: ${{ secrets.GLOT_ID }}
+  GLOT_SNIPPET_TITLE: "pollinations_models_snapshot"
+
 jobs:
   check-models:
     runs-on: ubuntu-latest
@@ -16,12 +21,19 @@ jobs:
         id: date
         run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
 
-      - name: Restore cache
-        id: cache
-        uses: actions/cache@v3
-        with:
-          path: pollinations_models.json
-          key: models-${{ steps.date.outputs.date }}-${{ hashFiles('pollinations_models.json') }}
+      - name: Restore from glot.io
+        id: restore
+        continue-on-error: true
+        run: |
+          RESPONSE=$(curl -s -X GET "https://glot.io/api/snippets/$GLOT_ID" \
+            -H "Authorization: Token $GLOT_TOKEN")
+          
+          if [ "$(echo "$RESPONSE" | jq -r '.files[0].content')" != "null" ]; then
+            echo "$RESPONSE" | jq -r '.files[0].content' > pollinations_models.json
+            echo "restored=true" >> $GITHUB_OUTPUT
+          else
+            echo "restored=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Fetch models with retries
         id: fetch
@@ -151,12 +163,21 @@ jobs:
             echo EOF
           } >> "$GITHUB_OUTPUT"
 
-      - name: Save cache
+      - name: Save to glot.io
         if: steps.compare.outputs.changed == 'true'
-        uses: actions/cache@v3
-        with:
-          path: pollinations_models.json
-          key: models-${{ steps.date.outputs.date }}-${{ hashFiles('pollinations_models.json') }}
+        run: |
+          curl -X POST "https://glot.io/api/snippets/$GLOT_ID" \
+            -H "Authorization: Token $GLOT_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "language": "javascript",
+              "title": "$GLOT_SNIPPET_TITLE",
+              "public": false,
+              "files": [{
+                "name": "pollinations_models.js",
+                "content": '"$(jq -c . pollinations_models.json)"'
+              }]
+            }'
 
       - name: Notify model changes
         if: steps.compare.outputs.changed == 'true'
