@@ -1,0 +1,17 @@
+name: Curl Header Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-curl:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send request with header
+        run: |
+          echo "Sending curl with --header..."
+          curl -sS https://httpbin.org/anything \
+            --header "Authorization: Token testtoken" \
+            --header "Content-Type: application/json" \
+            --data-binary '{"test":true}' \
+            | jq '.headers'
