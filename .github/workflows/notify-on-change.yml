@@ -181,8 +181,8 @@ jobs:
             }' > "$PAYLOAD_FILE"
       
           curl -X PUT "https://glot.io/api/snippets/$GLOT_ID" \
-            -H "Authorization: Token $GLOT_TOKEN" \
-            -H "Content-Type: application/json" \
+            -H 'Authorization: Token '"$GLOT_TOKEN" \
+            -H 'Content-Type: application/json' \
             --data-binary @"$PAYLOAD_FILE"
 
       - name: Notify model changes
