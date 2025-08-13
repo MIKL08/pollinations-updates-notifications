@@ -165,13 +165,9 @@ jobs:
 
       - name: Save to glot.io
         if: steps.compare.outputs.changed == 'true'
+        shell: bash
         run: |
           PAYLOAD_FILE=$(mktemp)
-
-          if ! jq empty pollinations_models.json; then
-            echo "::error::pollinations_models.json is missing or invalid"
-            exit 1
-          fi
 
           jq -n \
             --arg title "$GLOT_SNIPPET_TITLE" \
@@ -187,8 +183,8 @@ jobs:
             }' > "$PAYLOAD_FILE"
 
           curl -sS -X PUT "https://glot.io/api/snippets/$GLOT_ID" \
-            -H "Authorization: Token $GLOT_TOKEN" \
-            -H $'Content-Type:\x20application/json' \
+            --header "Authorization: Token $GLOT_TOKEN" \
+            --header "Content-Type: application/json" \
             --data-binary @"$PAYLOAD_FILE"
 
       - name: Notify model changes
