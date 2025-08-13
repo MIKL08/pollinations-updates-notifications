@@ -166,7 +166,7 @@ jobs:
       - name: Save to glot.io
         if: steps.compare.outputs.changed == 'true'
         run: |
-          curl -X POST "https://glot.io/api/snippets/$GLOT_ID" \
+          curl -X PUT "https://glot.io/api/snippets/$GLOT_ID" \
             -H "Authorization: Token $GLOT_TOKEN" \
             -H "Content-Type: application/json" \
             -d '{
