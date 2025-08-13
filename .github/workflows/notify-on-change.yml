@@ -76,7 +76,7 @@ jobs:
               sys.exit(1)
           
           normalized = [normalize_model(m) for m in data]
-          normalized.sort(key=lambda x: str(x.get("name",""))
+          normalized.sort(key=lambda x: str(x.get("name","")))
           
           curr_txt = json.dumps(normalized, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
           
