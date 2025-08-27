@@ -173,7 +173,7 @@ jobs:
           message: |
             *📢 Pollinations AI Models Update:*
             ${{ steps.compare.outputs.message }}
-          parse_mode: markdown
+          parse_mode: Markdown
 
       - name: Alert API failure
         if: steps.fetch.outputs.status == 'failure'
@@ -184,4 +184,4 @@ jobs:
           message: |
             ‼️_Maybe_ *Pollinations AI API is down*‼️
             Failed 3 times to fetch models.
-          parse_mode: markdown
+          parse_mode: Markdown
