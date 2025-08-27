@@ -123,19 +123,19 @@ jobs:
           has_changes = bool(added or removed or modified)
           
           if added:
-              lines.append("+ Added models:")
+              lines.append("*+ Added models:*")
               for n in added:
                   m=curr_map[n]
                   lines.append(f"  - {n} (description: {m.get('description','?')}, provider: {m.get('provider','?')}, tier: {m.get('tier','?')})")
           
           if removed:
-              lines.append("\n- Deleted models:")
+              lines.append("\n*- Deleted models:*")
               for n in removed:
                   m=prev_map[n]
                   lines.append(f"  - {n} (description: {m.get('description','?')}, provider: {m.get('provider','?')}, tier: {m.get('tier','?')})")
           
           if modified:
-              lines.append("\n> Updated models:")
+              lines.append("\n*> Updated models:*")
               for n in sorted(modified):
                   lines.append(f"  - {n}:")
                   for k,ch in modified[n].items():
@@ -171,8 +171,9 @@ jobs:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
-            📢 Pollinations Models Update
+            *📢 Pollinations AI Models Update:*
             ${{ steps.compare.outputs.message }}
+          parse_mode: markdown
 
       - name: Alert API failure
         if: steps.fetch.outputs.status == 'failure'
@@ -181,5 +182,6 @@ jobs:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
-            ‼️‼️ MAYBE POLLINATIONS AI API IS DOWN ‼️‼️
-            Failed 3 times to fetch models
+            ‼️_Maybe_ *Pollinations AI API is down*‼️
+            Failed 3 times to fetch models.
+          parse_mode: markdown
