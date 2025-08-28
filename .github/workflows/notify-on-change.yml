@@ -179,7 +179,7 @@ jobs:
         if: steps.fetch.outputs.status == 'failure'
         uses: appleboy/telegram-action@master
         with:
-          to: ${{ secrets.TELEGRAM_TO }}
+          to: ${{ secrets.TELEGRAM_TO_ERROR }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
             ‼️_Maybe_ *Pollinations AI API is down*‼️
