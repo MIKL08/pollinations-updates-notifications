@@ -123,19 +123,19 @@ jobs:
           has_changes = bool(added or removed or modified)
           
           if added:
-              lines.append("*+ Added models:*")
+              lines.append("<b>+ Added models:</b>")
               for n in added:
                   m=curr_map[n]
                   lines.append(f"  - {n} (description: {m.get('description','?')}, provider: {m.get('provider','?')}, tier: {m.get('tier','?')})")
           
           if removed:
-              lines.append("\n*- Deleted models:*")
+              lines.append("\n<b>- Deleted models:</b>")
               for n in removed:
                   m=prev_map[n]
                   lines.append(f"  - {n} (description: {m.get('description','?')}, provider: {m.get('provider','?')}, tier: {m.get('tier','?')})")
           
           if modified:
-              lines.append("\n*> Updated models:*")
+              lines.append("\n<b>&gt; Updated models:</b>")
               for n in sorted(modified):
                   lines.append(f"  - {n}:")
                   for k,ch in modified[n].items():
@@ -171,9 +171,9 @@ jobs:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
-            *📢 Pollinations AI Models Update:*
+            <b>📢 Pollinations AI Models Update:</b>
             ${{ steps.compare.outputs.message }}
-          format: markdown
+          format: html
 
       - name: Alert API failure
         if: steps.fetch.outputs.status == 'failure'
@@ -182,6 +182,6 @@ jobs:
           to: ${{ secrets.TELEGRAM_TO_ERROR }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
-            ‼️_Maybe_ *Pollinations AI API is down*‼️
+            ‼️<i>Maybe</i> <b>Pollinations AI API is down</b>‼️
             Failed 3 times to fetch models.
-          format: markdown
+          format: html
