@@ -123,7 +123,7 @@ jobs:
           has_changes = bool(added or removed or modified)
           
           if added:
-              lines.append("<b>+ Added models:</b>")
+              lines.append("\n<b>+ Added models:</b>")
               for n in added:
                   m=curr_map[n]
                   lines.append(f"  - {n} (description: {m.get('description','?')}, provider: {m.get('provider','?')}, tier: {m.get('tier','?')})")
