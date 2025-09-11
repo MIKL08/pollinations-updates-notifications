@@ -126,18 +126,18 @@ jobs:
               lines.append("\n<b>+ Added models:</b>")
               for n in added:
                   m=curr_map[n]
-                  lines.append(f"  - {n} (description: {m.get('description','?')}, provider: {m.get('provider','?')}, tier: {m.get('tier','?')})")
+                  lines.append(f"  - <code>{n}</code> (Description: {m.get('description','?')}, Tier: {m.get('tier','?')})")
           
           if removed:
               lines.append("\n<b>- Deleted models:</b>")
               for n in removed:
                   m=prev_map[n]
-                  lines.append(f"  - {n} (description: {m.get('description','?')}, provider: {m.get('provider','?')}, tier: {m.get('tier','?')})")
+                  lines.append(f"  - <code>{n}</code> (Description: {m.get('description','?')}, Tier: {m.get('tier','?')})")
           
           if modified:
               lines.append("\n<b>&gt; Updated models:</b>")
               for n in sorted(modified):
-                  lines.append(f"  - {n}:")
+                  lines.append(f"  - <code>{n}</code>:")
                   for k,ch in modified[n].items():
                       lines.append(f"      • {k}: {ch['old']} → {ch['new']}")
           
