@@ -189,19 +189,6 @@ jobs:
             Failed 3 times to fetch models.
           format: html
 
-      - name: Save updated text snapshot to glot.io
-        if: steps.compare.outputs.changed == 'true'
-        run: |
-          curl -s -X PUT "https://glot.io/api/snippets/${GLOT_ID_TEXT}" \
-            -H "Authorization: Token ${GLOT_TOKEN}" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "files": [{
-                "name": "pollinations_text_models.json",
-                "content": "'"$(cat pollinations_text_models.json | jq -Rs .)"'"
-              }]
-            }'
-
   check-image-models:
     runs-on: ubuntu-latest
     steps:
@@ -328,19 +315,3 @@ jobs:
             ‼️<i>Maybe</i> <b>Pollinations AI Image Models source is down</b>‼️
             Failed 3 times to fetch image model list.
           format: html
-
-      - name: Save updated image snapshot to glot.io
-        if: steps.compare.outputs.changed == 'true'
-        run: |
-          RAW_CONTENT=$(cat pollinations_image_models.json | jq -c .)
-          PAYLOAD=$(jq -n --arg content "$RAW_CONTENT" '{
-            files: [{ name: "pollinations_image_models.js", content: $content }],
-            language: "javascript",
-            public: false,
-            title: "pl-images"
-          }')
-          echo "$PAYLOAD" | jq .
-          curl -v -X PUT "https://glot.io/api/snippets/${{ secrets.GLOT_ID_IMAGE }}" \
-            -H "Authorization: Token ${{ secrets.GLOT_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d "$PAYLOAD"
