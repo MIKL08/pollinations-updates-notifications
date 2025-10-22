@@ -14,7 +14,7 @@ env:
   GLOT_ID_IMAGE: ${{ secrets.GLOT_ID_IMAGE }}
   TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
   TELEGRAM_TO_TEXT: ${{ secrets.TELEGRAM_TO }}
-  TELEGRAM_TO_IMAGE: ${{ secrets.TELEGRAM_TO_IMAGE }}
+  TELEGRAM_TO_IMAGE: ${{ secrets.TELEGRAM_TO }}
   TELEGRAM_TO_ERROR: ${{ secrets.TELEGRAM_TO_ERROR }}
 
 jobs:
