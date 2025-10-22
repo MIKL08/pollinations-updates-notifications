@@ -329,19 +329,70 @@ jobs:
             Failed 3 times to fetch image model list.
           format: html
 
-      - name: Save updated image snapshot to glot.io
+      - name: Save updated image snapshot to glot.io (with debug logs)
         if: steps.compare.outputs.changed == 'true'
         run: |
+          echo "🔍 Step: Preparing to save updated image models to glot.io"
+          
+          
+          echo "📄 Checking pollinations_image_models.json..."
+          ls -l pollinations_image_models.json
+          echo "----- BEGIN FILE CONTENT -----"
+          cat pollinations_image_models.json
+          echo "----- END FILE CONTENT -----"
+      
+          
+          echo "📦 Encoding file as JSON string..."
           CONTENT=$(jq -Rs . pollinations_image_models.json)
-          jq -n --arg content "$CONTENT" '{
-            files: [{
-              name: "pollinations_image_models.js",
-              content: $content
-            }],
-            language: "javascript",
-            public: false,
-            title: "pl-images"
-          }' | curl -s -X PUT "https://glot.io/api/snippets/${GLOT_ID_IMAGE}" \
+          echo "✅ Encoded content (first 200 chars): $(echo "$CONTENT" | cut -c1-200)..."
+      
+          
+          echo "🧱 Building JSON payload..."
+          PAYLOAD=$(jq -n \
+            --arg content "$CONTENT" \
+            '{
+              files: [{
+                name: "pollinations_image_models.js",
+                content: $content
+              }],
+              language: "javascript",
+              public: false,
+              title: "pl-images"
+            }')
+          
+          echo "✅ Payload (pretty-printed):"
+          echo "$PAYLOAD" | jq .
+      
+          
+          echo "🧪 Validating payload is valid JSON..."
+          if echo "$PAYLOAD" | jq empty; then
+            echo "✅ Payload is valid JSON"
+          else
+            echo "❌ FATAL: Payload is NOT valid JSON!"
+            exit 1
+          fi
+      
+        
+          echo "📤 Sending PUT request to glot.io..."
+          echo "URL: https://glot.io/api/snippets/${GLOT_ID_IMAGE}"
+          echo "Headers: Authorization: Token [REDACTED], Content-Type: application/json"
+      
+          RESPONSE=$(echo "$PAYLOAD" | curl -s -w "%{http_code}" -X PUT "https://glot.io/api/snippets/${GLOT_ID_IMAGE}" \
             -H "Authorization: Token ${GLOT_TOKEN}" \
             -H "Content-Type: application/json" \
-            -d @-
+            -d @-)
+      
+        
+          HTTP_CODE="${RESPONSE: -3}"
+          BODY="${RESPONSE%???}"
+      
+          echo "📡 HTTP Status Code: $HTTP_CODE"
+          echo "📥 Response Body:"
+          echo "$BODY"
+      
+          if [ "$HTTP_CODE" -eq 200 ] || [ "$HTTP_CODE" -eq 201 ]; then
+            echo "✅ Successfully saved image models snapshot to glot.io"
+          else
+            echo "❌ FAILED to save to glot.io"
+            exit 1
+          fi
