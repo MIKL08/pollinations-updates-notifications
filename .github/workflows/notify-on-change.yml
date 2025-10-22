@@ -211,7 +211,7 @@ jobs:
         run: |
           set -euo pipefail
           for i in {1..3}; do
-            if curl -sS --fail -A "github-actions-bot" "https://text.pollinations.ai/models" -o /tmp/image_models.json; then
+            if curl -sS --fail -A "github-actions-bot" "https://image.pollinations.ai/models" -o /tmp/image_models.json; then
               echo "status=success" >> $GITHUB_OUTPUT
               exit 0
             fi
