@@ -337,7 +337,10 @@ jobs:
             -H "Content-Type: application/json" \
             -d '{
               "files": [{
-                "name": "pollinations_image_models.json",
+                "name": "pollinations_image_models.js",
                 "content": "'"$(cat pollinations_image_models.json | jq -Rs .)"'"
-              }]
+              }],
+              "language": "javascript",
+              "public": false,
+              "title": "pl-images"
             }'
