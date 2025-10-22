@@ -138,7 +138,7 @@ jobs:
                   lines.append(f"  - <code>{n}</code> (Description: {m.get('description','?')}, Tier: {m.get('tier','?')})")
 
           if modified:
-              lines.append("\n<b>> Updated models:</b>")
+              lines.append("\n<b>&gt; Updated models:</b>")
               for n in sorted(modified):
                   lines.append(f"  - <code>{n}</code>:")
                   for k,ch in modified[n].items():
