@@ -332,15 +332,16 @@ jobs:
       - name: Save updated image snapshot to glot.io
         if: steps.compare.outputs.changed == 'true'
         run: |
-          curl -s -X PUT "https://glot.io/api/snippets/${GLOT_ID_IMAGE}" \
+          CONTENT=$(cat pollinations_image_models.json | jq -Rs .)
+          jq -n --arg content "$CONTENT" '{
+            files: [{
+              name: "pollinations_image_models.js",
+              content: $content
+            }],
+            language: "javascript",
+            public: false,
+            title: "pl-images"
+          }' | curl -s -X PUT "https://glot.io/api/snippets/${GLOT_ID_IMAGE}" \
             -H "Authorization: Token ${GLOT_TOKEN}" \
             -H "Content-Type: application/json" \
-            -d '{
-              "files": [{
-                "name": "pollinations_image_models.js",
-                "content": "'"$(cat pollinations_image_models.json | jq -Rs .)"'"
-              }],
-              "language": "javascript",
-              "public": false,
-              "title": "pl-images"
-            }'
+            -d @-
