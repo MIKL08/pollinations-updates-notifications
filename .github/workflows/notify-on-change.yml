@@ -332,7 +332,7 @@ jobs:
       - name: Save updated image snapshot to glot.io
         if: steps.compare.outputs.changed == 'true'
         run: |
-          CONTENT=$(cat pollinations_image_models.json | jq -Rs .)
+          CONTENT=$(jq -Rs . pollinations_image_models.json)
           jq -n --arg content "$CONTENT" '{
             files: [{
               name: "pollinations_image_models.js",
