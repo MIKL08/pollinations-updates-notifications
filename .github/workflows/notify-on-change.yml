@@ -330,17 +330,17 @@ jobs:
           format: html
 
       - name: Save updated image snapshot to glot.io
-                    if: steps.compare.outputs.changed == 'true'
-                    run: |
-                      RAW_CONTENT=$(cat pollinations_image_models.json)
-                      PAYLOAD=$(jq -n --arg content "$RAW_CONTENT" '{
-                        files: [{ name: "pollinations_image_models.js", content: $content }],
-                        language: "javascript",
-                        public: false,
-                        title: "pl-images"
-                      }')
-                      echo "$PAYLOAD" | jq .
-                      echo "$PAYLOAD" | curl -s -X PUT "https://glot.io/api/snippets/${GLOT_ID_IMAGE}" \
-                        -H "Authorization: Token ${GLOT_TOKEN}" \
-                        -H "Content-Type: application/json" \
-                        -d @-
+        if: steps.compare.outputs.changed == 'true'
+        run: |
+          RAW_CONTENT=$(cat pollinations_image_models.json)
+          PAYLOAD=$(jq -n --arg content "$RAW_CONTENT" '{
+            files: [{ name: "pollinations_image_models.js", content: $content }],
+            language: "javascript",
+            public: false,
+            title: "pl-images"
+          }')
+          echo "$PAYLOAD" | jq .
+          echo "$PAYLOAD" | curl -s -X PUT "https://glot.io/api/snippets/${GLOT_ID_IMAGE}" \
+            -H "Authorization: Token ${GLOT_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d @-
