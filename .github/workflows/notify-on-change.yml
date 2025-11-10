@@ -18,7 +18,7 @@ env:
   TELEGRAM_TO_TEXT: ${{ secrets.TELEGRAM_TO }}
   TELEGRAM_TO_IMAGE: ${{ secrets.TELEGRAM_TO }}
   TELEGRAM_TO_ERROR: ${{ secrets.TELEGRAM_TO_ERROR }}
-  TELEGRAM_TO_BETA: ${{ secrets.TELEGRAM_TO_ERROR }}
+  TELEGRAM_TO_BETA: ${{ secrets.TELEGRAM_TO }}
 
 jobs:
   check-text-models:
