@@ -431,9 +431,8 @@ jobs:
           to: ${{ env.TELEGRAM_TO_BETA }}
           token: ${{ env.TELEGRAM_TOKEN }}
           message: |
-            <b>🛠️ Pollinations AI (Beta with pollens system) Text Models Update:</b>
+            <b>🛠️ Pollinations AI (<a href="https://enter.pollinations.ai/">Beta with pollens system</a>) Text Models Update:</b>
             ${{ steps.compare.outputs.message }}
-            <a href="https://enter.pollinations.ai/">Try Pollinations AI Beta</a>
           format: html
 
       - name: Alert text API failure
@@ -559,7 +558,7 @@ jobs:
           to: ${{ env.TELEGRAM_TO_BETA }}
           token: ${{ env.TELEGRAM_TOKEN }}
           message: |
-            <b>⚙️ Pollinations AI (Beta with pollens system) Image Models Update:</b>
+            <b>⚙️ Pollinations AI (<a href="https://enter.pollinations.ai/">Beta with pollens system</a>) Image Models Update:</b>
             ${{ steps.compare.outputs.message }}
           format: html
 
