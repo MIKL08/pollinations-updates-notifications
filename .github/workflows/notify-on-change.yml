@@ -434,6 +434,7 @@ jobs:
             <b>🛠️ Pollinations AI (<a href="https://enter.pollinations.ai/">Beta with pollens system</a>) Text Models Update:</b>
             ${{ steps.compare.outputs.message }}
           format: html
+          disable_web_page_preview: true
 
       - name: Alert text API failure
         if: steps.fetch.outputs.status == 'failure'
@@ -561,6 +562,7 @@ jobs:
             <b>⚙️ Pollinations AI (<a href="https://enter.pollinations.ai/">Beta with pollens system</a>) Image Models Update:</b>
             ${{ steps.compare.outputs.message }}
           format: html
+          disable_web_page_preview: true
 
       - name: Alert image source failure
         if: steps.fetch.outputs.status == 'failure'
