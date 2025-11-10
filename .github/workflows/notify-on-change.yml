@@ -1,4 +1,4 @@
-Name: Pollinations Models Monitor
+name: Pollinations Models Monitor
 
 on:
   schedule:
