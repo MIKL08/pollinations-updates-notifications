@@ -1,4 +1,4 @@
-name: Pollinations Models Monitor
+Name: Pollinations Models Monitor
 
 on:
   schedule:
@@ -12,6 +12,8 @@ env:
   GLOT_TOKEN: ${{ secrets.GLOT_TOKEN }}
   GLOT_ID_TEXT: ${{ secrets.GLOT_ID }}
   GLOT_ID_IMAGE: ${{ secrets.GLOT_ID_IMAGE }}
+  GLOT_ID_TEXT_POLLENS: ${{ secrets.GLOT_ID_TEXT_POLLENS }}
+  GLOT_ID_IMAGE_POLLENS: ${{ secrets.GLOT_ID_IMAGE_POLLENS }}
   TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
   TELEGRAM_TO_TEXT: ${{ secrets.TELEGRAM_TO }}
   TELEGRAM_TO_IMAGE: ${{ secrets.TELEGRAM_TO }}
@@ -314,5 +316,259 @@ jobs:
           token: ${{ env.TELEGRAM_TOKEN }}
           message: |
             ‼️<i>Maybe</i> <b>Pollinations AI Image Models source is down</b>‼️
+            Failed 3 times to fetch image model list.
+          format: html
+
+  check-text-models-pollens:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Restore text models from glot.io
+        id: restore
+        continue-on-error: true
+        run: |
+          RESPONSE=$(curl -s -X GET "https://glot.io/api/snippets/${GLOT_ID_TEXT_POLLENS}" \
+            -H "Authorization: Token ${GLOT_TOKEN}")
+          if [ "$(echo "$RESPONSE" | jq -r '.files[0].content')" != "null" ]; then
+            echo "$RESPONSE" | jq -r '.files[0].content' > pollens_text_models.json
+            echo "restored=true" >> $GITHUB_OUTPUT
+          else
+            echo "restored=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Fetch text models with retries
+        id: fetch
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          for i in {1..3}; do
+            if curl -sS --fail -A "github-actions-bot" "https://enter.pollinations.ai/api/generate/v1/models" -o /tmp/text_models.json; then
+              echo "status=success" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+            echo "Attempt $i/3 failed"
+            sleep 10
+          done
+          echo "::error::POLLENS TEXT API IS DOWN - Failed after 3 attempts"
+          echo "status=failure" >> $GITHUB_OUTPUT
+          exit 0
+
+      - name: Compare text models
+        if: steps.fetch.outputs.status == 'success'
+        id: compare
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, sys
+          from pathlib import Path
+
+          tmp = Path("/tmp/text_models.json")
+          try:
+              data = json.loads(tmp.read_text(encoding="utf-8"))
+              if not isinstance(data, dict) or "data" not in data or not isinstance(data["data"], list):
+                  raise ValueError("Expected a JSON object with 'data' array")
+              curr_set = set(str(m.get("id", "")) for m in data["data"] if m.get("id"))
+          except Exception as e:
+              print(f"::error::Failed to parse JSON: {e}")
+              sys.exit(1)
+
+          prev_path = Path("pollens_text_models.json")
+          lines = []
+
+          if not prev_path.exists():
+              prev_path.write_text(json.dumps(sorted(curr_set), indent=2) + "\n", encoding="utf-8")
+              Path("/tmp/changed.flag").write_text("false", encoding="utf-8")
+              Path("/tmp/message.txt").write_text("First snapshot initialized. No notification sent.\n", encoding="utf-8")
+              sys.exit(0)
+
+          try:
+              prev_list = json.loads(prev_path.read_text(encoding="utf-8"))
+              prev_set = set(str(x) for x in prev_list if x)
+          except Exception as e:
+              print(f"::error::Failed to parse previous models: {e}")
+              sys.exit(1)
+
+          added = sorted(curr_set - prev_set)
+          removed = sorted(prev_set - curr_set)
+          has_changes = bool(added or removed)
+
+          if added:
+              lines.append("\n<b>+ Added models:</b>")
+              for n in added:
+                  lines.append(f"  - <code>{n}</code>")
+
+          if removed:
+              lines.append("\n<b>- Deleted models:</b>")
+              for n in removed:
+                  lines.append(f"  - <code>{n}</code>")
+
+          if not has_changes:
+              lines.append("No changes found.")
+
+          Path("/tmp/message.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
+          Path("/tmp/changed.flag").write_text("true" if has_changes else "false", encoding="utf-8")
+
+          if has_changes:
+              prev_path.write_text(json.dumps(sorted(curr_set), indent=2) + "\n", encoding="utf-8")
+          PY
+
+          CHANGED=$(cat /tmp/changed.flag 2>/dev/null || echo false)
+          if [ "$CHANGED" = "true" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          {
+            echo 'message<<EOF'
+            cat /tmp/message.txt
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Notify text model changes
+        if: steps.compare.outputs.changed == 'true'
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ env.TELEGRAM_TO_BETA }}
+          token: ${{ env.TELEGRAM_TOKEN }}
+          message: |
+            <b>💬 Pollens AI Text Models Update:</b>
+            ${{ steps.compare.outputs.message }}
+          format: html
+
+      - name: Alert text API failure
+        if: steps.fetch.outputs.status == 'failure'
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ env.TELEGRAM_TO_ERROR }}
+          token: ${{ env.TELEGRAM_TOKEN }}
+          message: |
+            ‼️<i>Maybe</i> <b>Pollens AI Text API is down</b>‼️
+            Failed 3 times to fetch models.
+          format: html
+
+  check-image-models-pollens:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Restore image models from glot.io
+        id: restore
+        continue-on-error: true
+        run: |
+          RESPONSE=$(curl -s -X GET "https://glot.io/api/snippets/${GLOT_ID_IMAGE_POLLENS}" \
+            -H "Authorization: Token ${GLOT_TOKEN}")
+          if [ "$(echo "$RESPONSE" | jq -r '.files[0].content')" != "null" ]; then
+            echo "$RESPONSE" | jq -r '.files[0].content' > pollens_image_models.json
+            echo "restored=true" >> $GITHUB_OUTPUT
+          else
+            echo "restored=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Fetch image models with retries
+        id: fetch
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          for i in {1..3}; do
+            if curl -sS --fail -A "github-actions-bot" "https://enter.pollinations.ai/api/generate/image/models" -o /tmp/image_models.json; then
+              echo "status=success" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+            echo "Attempt $i/3 failed"
+            sleep 10
+          done
+          echo "::error::POLLENS IMAGE MODELS SOURCE IS DOWN - Failed after 3 attempts"
+          echo "status=failure" >> $GITHUB_OUTPUT
+          exit 0
+
+      - name: Compare image models
+        if: steps.fetch.outputs.status == 'success'
+        id: compare
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, sys
+          from pathlib import Path
+
+          tmp = Path("/tmp/image_models.json")
+          try:
+              curr_list = json.loads(tmp.read_text(encoding="utf-8"))
+              if not isinstance(curr_list, list):
+                  raise ValueError("Expected a JSON array")
+              curr_set = set(str(x) for x in curr_list if x)
+          except Exception as e:
+              print(f"::error::Failed to parse image models JSON: {e}")
+              sys.exit(1)
+
+          prev_path = Path("pollens_image_models.json")
+          lines = []
+
+          if not prev_path.exists():
+              prev_path.write_text(json.dumps(sorted(curr_set), indent=2) + "\n", encoding="utf-8")
+              Path("/tmp/changed.flag").write_text("false", encoding="utf-8")
+              Path("/tmp/message.txt").write_text("First image models snapshot initialized. No notification sent.\n", encoding="utf-8")
+              sys.exit(0)
+
+          try:
+              prev_list = json.loads(prev_path.read_text(encoding="utf-8"))
+              prev_set = set(str(x) for x in prev_list if x)
+          except Exception as e:
+              print(f"::error::Failed to parse previous image models: {e}")
+              sys.exit(1)
+
+          added = sorted(curr_set - prev_set)
+          removed = sorted(prev_set - curr_set)
+          has_changes = bool(added or removed)
+
+          if added:
+              lines.append("\n<b>+ Added image models:</b>")
+              for n in added:
+                  lines.append(f"  - <code>{n}</code>")
+
+          if removed:
+              lines.append("\n<b>- Removed image models:</b>")
+              for n in removed:
+                  lines.append(f"  - <code>{n}</code>")
+
+          if not has_changes:
+              lines.append("No changes found.")
+
+          Path("/tmp/message.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
+          Path("/tmp/changed.flag").write_text("true" if has_changes else "false", encoding="utf-8")
+
+          if has_changes:
+              prev_path.write_text(json.dumps(sorted(curr_set), indent=2) + "\n", encoding="utf-8")
+          PY
+
+          CHANGED=$(cat /tmp/changed.flag 2>/dev/null || echo false)
+          if [ "$CHANGED" = "true" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          {
+            echo 'message<<EOF'
+            cat /tmp/message.txt
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Notify image model changes
+        if: steps.compare.outputs.changed == 'true'
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ env.TELEGRAM_TO_BETA }}
+          token: ${{ env.TELEGRAM_TOKEN }}
+          message: |
+            <b>🎨 Pollens AI Image Models Update:</b>
+            ${{ steps.compare.outputs.message }}
+          format: html
+
+      - name: Alert image source failure
+        if: steps.fetch.outputs.status == 'failure'
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ env.TELEGRAM_TO_ERROR }}
+          token: ${{ env.TELEGRAM_TOKEN }}
+          message: |
+            ‼️<i>Maybe</i> <b>Pollens AI Image Models source is down</b>‼️
             Failed 3 times to fetch image model list.
           format: html
