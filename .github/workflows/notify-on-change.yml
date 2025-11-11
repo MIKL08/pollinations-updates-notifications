@@ -265,12 +265,12 @@ jobs:
           has_changes = bool(added or removed)
 
           if added:
-              lines.append("\n<b>+ Added image models:</b>")
+              lines.append("\n<b>+ Added models:</b>")
               for n in added:
                   lines.append(f"  - <code>{n}</code>")
 
           if removed:
-              lines.append("\n<b>- Removed image models:</b>")
+              lines.append("\n<b>- Deleted models:</b>")
               for n in removed:
                   lines.append(f"  - <code>{n}</code>")
 
@@ -552,12 +552,12 @@ jobs:
           has_changes = bool(added or removed)
 
           if added:
-              lines.append("\n<b>+ Added image models:</b>")
+              lines.append("\n<b>+ Added models:</b>")
               for n in added:
                   lines.append(f"  - <code>{n}</code>")
 
           if removed:
-              lines.append("\n<b>- Removed image models:</b>")
+              lines.append("\n<b>- Deleted models:</b>")
               for n in removed:
                   lines.append(f"  - <code>{n}</code>")
 
