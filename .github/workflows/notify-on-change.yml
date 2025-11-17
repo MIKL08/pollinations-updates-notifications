@@ -418,13 +418,13 @@ jobs:
               lines.append("\n<b>+ Added models:</b>")
               for n in added:
                   m=curr_map[n]
-                  lines.append(f"  - <code>{n}</code> (Owned by: {m.get('owned_by','?')})")
+                  lines.append(f"  - <code>{n}</code>")
 
           if removed:
               lines.append("\n<b>- Deleted models:</b>")
               for n in removed:
                   m=prev_map[n]
-                  lines.append(f"  - <code>{n}</code> (Owned by: {m.get('owned_by','?')})")
+                  lines.append(f"  - <code>{n}</code>")
 
           if modified:
               lines.append("\n<b>> Updated models:</b>")
