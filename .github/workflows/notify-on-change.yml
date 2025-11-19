@@ -523,43 +523,75 @@ jobs:
 
           tmp = Path("/tmp/image_models.json")
           try:
-              curr_list = json.loads(tmp.read_text(encoding="utf-8"))
-              if not isinstance(curr_list, list):
-                  raise ValueError("Expected a JSON array")
-              curr_set = set(str(x) for x in curr_list if x)
+              data = json.loads(tmp.read_text(encoding="utf-8"))
           except Exception as e:
-              print(f"::error::Failed to parse image models JSON: {e}")
+              print(f"::error::Failed to parse JSON: {e}")
               sys.exit(1)
+
+          models = data.get("data", []) if isinstance(data, dict) else data
+          normalized = [dict(m) for m in models]
+          normalized.sort(key=lambda x: str(x.get("name","")))
+
+          curr_txt = json.dumps(normalized, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
 
           prev_path = Path("pollens_image_models.json")
           lines = []
 
           if not prev_path.exists():
-              prev_path.write_text(json.dumps(sorted(curr_set), indent=2) + "\n", encoding="utf-8")
+              prev_path.write_text(curr_txt, encoding="utf-8")
               Path("/tmp/changed.flag").write_text("false", encoding="utf-8")
-              Path("/tmp/message.txt").write_text("First image models snapshot initialized. No notification sent.\n", encoding="utf-8")
+              Path("/tmp/message.txt").write_text("First snapshot initialized. No notification sent.\n", encoding="utf-8")
               sys.exit(0)
 
-          try:
-              prev_list = json.loads(prev_path.read_text(encoding="utf-8"))
-              prev_set = set(str(x) for x in prev_list if x)
-          except Exception as e:
-              print(f"::error::Failed to parse previous image models: {e}")
-              sys.exit(1)
+          prev = json.loads(prev_path.read_text(encoding="utf-8"))
 
-          added = sorted(curr_set - prev_set)
-          removed = sorted(prev_set - curr_set)
-          has_changes = bool(added or removed)
+          def to_map(items):
+              return {str(i.get("name","")): i for i in items if i.get("name")}
+
+          prev_map = to_map(prev)
+          curr_map = to_map(normalized)
+
+          added = sorted(set(curr_map) - set(prev_map))
+          removed = sorted(set(prev_map) - set(curr_map))
+          common = sorted(set(prev_map) & set(curr_map))
+
+          modified = {}
+
+          def diff_dicts(o,n):
+              d={}
+              for k in sorted(set(o)|set(n)):
+                  if k == "created":
+                      continue
+                  ov=o.get(k); nv=n.get(k)
+                  if ov!=nv:
+                      d[k] = {"old":ov, "new":nv}
+              return d
+
+          for name in common:
+              d = diff_dicts(prev_map[name], curr_map[name])
+              if d:
+                  modified[name]=d
+
+          has_changes = bool(added or removed or modified)
 
           if added:
               lines.append("\n<b>+ Added models:</b>")
               for n in added:
-                  lines.append(f"  - <code>{n}</code>")
+                  m=curr_map[n]
+                  lines.append(f"  - <code>{n}</code> (Description: {m.get('description','?')})")
 
           if removed:
               lines.append("\n<b>- Deleted models:</b>")
               for n in removed:
-                  lines.append(f"  - <code>{n}</code>")
+                  m=prev_map[n]
+                  lines.append(f"  - <code>{n}</code> (Description: {m.get('description','?')})")
+
+          if modified:
+              lines.append("\n<b>> Updated models:</b>")
+              for n in sorted(modified):
+                  lines.append(f"  - <code>{n}</code>:")
+                  for k,ch in modified[n].items():
+                      lines.append(f"      • {k}: {ch['old']} → {ch['new']}")
 
           if not has_changes:
               lines.append("No changes found.")
@@ -568,7 +600,7 @@ jobs:
           Path("/tmp/changed.flag").write_text("true" if has_changes else "false", encoding="utf-8")
 
           if has_changes:
-              prev_path.write_text(json.dumps(sorted(curr_set), indent=2) + "\n", encoding="utf-8")
+              prev_path.write_text(curr_txt, encoding="utf-8")
           PY
 
           CHANGED=$(cat /tmp/changed.flag 2>/dev/null || echo false)
