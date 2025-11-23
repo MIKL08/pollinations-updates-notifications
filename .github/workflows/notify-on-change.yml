@@ -6,14 +6,9 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 env:
-  GLOT_TOKEN: ${{ secrets.GLOT_TOKEN }}
-  GLOT_ID_TEXT: ${{ secrets.GLOT_ID }}
-  GLOT_ID_IMAGE: ${{ secrets.GLOT_ID_IMAGE }}
-  GLOT_ID_TEXT_POLLENS: ${{ secrets.GLOT_ID_TEXT_POLLENS }}
-  GLOT_ID_IMAGE_POLLENS: ${{ secrets.GLOT_ID_IMAGE_POLLENS }}
   TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
   TELEGRAM_TO_TEXT: ${{ secrets.TELEGRAM_TO }}
   TELEGRAM_TO_IMAGE: ${{ secrets.TELEGRAM_TO }}
@@ -28,18 +23,14 @@ jobs:
         id: date
         run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
 
-      - name: Restore text models from glot.io
-        id: restore
+      - name: Checkout saves branch for text models
+        uses: actions/checkout@v4
+        with:
+          ref: saves
+          sparse-checkout: |
+            pollinations_text_models.json
+          sparse-checkout-cone-mode: false
         continue-on-error: true
-        run: |
-          RESPONSE=$(curl -s -X GET "https://glot.io/api/snippets/${GLOT_ID_TEXT}" \
-            -H "Authorization: Token ${GLOT_TOKEN}")
-          if [ "$(echo "$RESPONSE" | jq -r '.files[0].content')" != "null" ]; then
-            echo "$RESPONSE" | jq -r '.files[0].content' > pollinations_text_models.json
-            echo "restored=true" >> $GITHUB_OUTPUT
-          else
-            echo "restored=false" >> $GITHUB_OUTPUT
-          fi
 
       - name: Fetch text models with retries
         id: fetch
@@ -170,6 +161,15 @@ jobs:
             echo EOF
           } >> "$GITHUB_OUTPUT"
 
+      - name: Commit updated text models snapshot
+        if: steps.compare.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pollinations_text_models.json
+          git commit -m "Update text models snapshot [$(date +'%Y-%m-%d %H:%M')]"
+          git push origin saves
+
       - name: Notify text model changes
         if: steps.compare.outputs.changed == 'true'
         uses: appleboy/telegram-action@master
@@ -195,18 +195,14 @@ jobs:
   check-image-models:
     runs-on: ubuntu-latest
     steps:
-      - name: Restore image models from glot.io
-        id: restore
+      - name: Checkout saves branch for image models
+        uses: actions/checkout@v4
+        with:
+          ref: saves
+          sparse-checkout: |
+            pollinations_image_models.json
+          sparse-checkout-cone-mode: false
         continue-on-error: true
-        run: |
-          RESPONSE=$(curl -s -X GET "https://glot.io/api/snippets/${GLOT_ID_IMAGE}" \
-            -H "Authorization: Token ${GLOT_TOKEN}")
-          if [ "$(echo "$RESPONSE" | jq -r '.files[0].content')" != "null" ]; then
-            echo "$RESPONSE" | jq -r '.files[0].content' > pollinations_image_models.json
-            echo "restored=true" >> $GITHUB_OUTPUT
-          else
-            echo "restored=false" >> $GITHUB_OUTPUT
-          fi
 
       - name: Fetch image models with retries
         id: fetch
@@ -297,6 +293,15 @@ jobs:
             echo EOF
           } >> "$GITHUB_OUTPUT"
 
+      - name: Commit updated image models snapshot
+        if: steps.compare.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pollinations_image_models.json
+          git commit -m "Update image models snapshot [$(date +'%Y-%m-%d %H:%M')]"
+          git push origin saves
+
       - name: Notify image model changes
         if: steps.compare.outputs.changed == 'true'
         uses: appleboy/telegram-action@master
@@ -322,18 +327,14 @@ jobs:
   check-text-models-pollens:
     runs-on: ubuntu-latest
     steps:
-      - name: Restore text models from glot.io
-        id: restore
+      - name: Checkout saves branch for pollens text models
+        uses: actions/checkout@v4
+        with:
+          ref: saves
+          sparse-checkout: |
+            pollens_text_models.json
+          sparse-checkout-cone-mode: false
         continue-on-error: true
-        run: |
-          RESPONSE=$(curl -s -X GET "https://glot.io/api/snippets/${GLOT_ID_TEXT_POLLENS}" \
-            -H "Authorization: Token ${GLOT_TOKEN}")
-          if [ "$(echo "$RESPONSE" | jq -r '.files[0].content')" != "null" ]; then
-            echo "$RESPONSE" | jq -r '.files[0].content' > pollens_text_models.json
-            echo "restored=true" >> $GITHUB_OUTPUT
-          else
-            echo "restored=false" >> $GITHUB_OUTPUT
-          fi
 
       - name: Fetch text models with retries
         id: fetch
@@ -456,6 +457,15 @@ jobs:
             echo EOF
           } >> "$GITHUB_OUTPUT"
 
+      - name: Commit updated pollens text models snapshot
+        if: steps.compare.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pollens_text_models.json
+          git commit -m "Update pollens text models snapshot [$(date +'%Y-%m-%d %H:%M')]"
+          git push origin saves
+
       - name: Notify text model changes
         if: steps.compare.outputs.changed == 'true'
         uses: appleboy/telegram-action@master
@@ -482,18 +492,14 @@ jobs:
   check-image-models-pollens:
     runs-on: ubuntu-latest
     steps:
-      - name: Restore image models from glot.io
-        id: restore
+      - name: Checkout saves branch for pollens image models
+        uses: actions/checkout@v4
+        with:
+          ref: saves
+          sparse-checkout: |
+            pollens_image_models.json
+          sparse-checkout-cone-mode: false
         continue-on-error: true
-        run: |
-          RESPONSE=$(curl -s -X GET "https://glot.io/api/snippets/${GLOT_ID_IMAGE_POLLENS}" \
-            -H "Authorization: Token ${GLOT_TOKEN}")
-          if [ "$(echo "$RESPONSE" | jq -r '.files[0].content')" != "null" ]; then
-            echo "$RESPONSE" | jq -r '.files[0].content' > pollens_image_models.json
-            echo "restored=true" >> $GITHUB_OUTPUT
-          else
-            echo "restored=false" >> $GITHUB_OUTPUT
-          fi
 
       - name: Fetch image models with retries
         id: fetch
@@ -615,6 +621,15 @@ jobs:
             cat /tmp/message.txt
             echo EOF
           } >> "$GITHUB_OUTPUT"
+
+      - name: Commit updated pollens image models snapshot
+        if: steps.compare.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pollens_image_models.json
+          git commit -m "Update pollens image models snapshot [$(date +'%Y-%m-%d %H:%M')]"
+          git push origin saves
 
       - name: Notify image model changes
         if: steps.compare.outputs.changed == 'true'
