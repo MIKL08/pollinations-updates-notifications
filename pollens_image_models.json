@@ -1,1 +1,119 @@
-[{"name":"flux","aliases":[],"pricing":{"image_price":0.00012,"currency":"USD"},"description":"Flux - Fast and high-quality image generation","input_modalities":["text"],"output_modalities":["image"]},{"name":"kontext","aliases":[],"pricing":{"image_price":0.04,"currency":"USD"},"description":"Kontext - Context-aware image generation","input_modalities":["text","image"],"output_modalities":["image"]},{"name":"turbo","aliases":[],"pricing":{"image_price":0.0003,"currency":"USD"},"description":"Turbo - Ultra-fast image generation","input_modalities":["text"],"output_modalities":["image"]},{"name":"nanobanana","aliases":[],"pricing":{"input_token_price":3e-7,"image_price":0.00003,"currency":"USD"},"description":"NanoBanana - Gemini 2.5 Flash Image (currently disabled)","input_modalities":["text","image"],"output_modalities":["image"]},{"name":"seedream","aliases":[],"pricing":{"image_price":0.03,"currency":"USD"},"description":"Seedream 4.0 - ByteDance ARK","input_modalities":["text","image"],"output_modalities":["image"]},{"name":"gptimage","aliases":["gpt-image","gpt-image-1-mini"],"pricing":{"input_token_price":0.000002,"cached_token_price":2.0000000000000002e-7,"image_price":0.000008,"currency":"USD"},"description":"GPT Image 1 Mini - OpenAI's image generation model","input_modalities":["text","image"],"output_modalities":["image"]}]
+[
+  {
+    "aliases": [],
+    "description": "Flux - Fast and high-quality image generation",
+    "input_modalities": [
+      "text"
+    ],
+    "name": "flux",
+    "output_modalities": [
+      "image"
+    ],
+    "pricing": {
+      "currency": "USD",
+      "image_price": 0.00012
+    }
+  },
+  {
+    "aliases": [
+      "gpt-image",
+      "gpt-image-1-mini"
+    ],
+    "description": "GPT Image 1 Mini - OpenAI's image generation model",
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "name": "gptimage",
+    "output_modalities": [
+      "image"
+    ],
+    "pricing": {
+      "cached_token_price": 2.0000000000000002e-07,
+      "currency": "USD",
+      "image_price": 8e-06,
+      "input_token_price": 2e-06
+    }
+  },
+  {
+    "aliases": [],
+    "description": "Kontext - Context-aware image generation",
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "name": "kontext",
+    "output_modalities": [
+      "image"
+    ],
+    "pricing": {
+      "currency": "USD",
+      "image_price": 0.04
+    }
+  },
+  {
+    "aliases": [],
+    "description": "NanoBanana - Gemini 2.5 Flash Image",
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "name": "nanobanana",
+    "output_modalities": [
+      "image"
+    ],
+    "pricing": {
+      "currency": "USD",
+      "image_price": 3e-05,
+      "input_token_price": 3e-07
+    }
+  },
+  {
+    "aliases": [],
+    "description": "NanoBanana Pro - Gemini 3 Pro Image (4K, Thinking)",
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "name": "nanobanana-pro",
+    "output_modalities": [
+      "image"
+    ],
+    "pricing": {
+      "currency": "USD",
+      "image_price": 0.00012,
+      "input_token_price": 1.25e-06
+    }
+  },
+  {
+    "aliases": [],
+    "description": "Seedream 4.0 - ByteDance ARK",
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "name": "seedream",
+    "output_modalities": [
+      "image"
+    ],
+    "pricing": {
+      "currency": "USD",
+      "image_price": 0.03
+    }
+  },
+  {
+    "aliases": [],
+    "description": "Turbo - Ultra-fast image generation",
+    "input_modalities": [
+      "text"
+    ],
+    "name": "turbo",
+    "output_modalities": [
+      "image"
+    ],
+    "pricing": {
+      "currency": "USD",
+      "image_price": 0.0003
+    }
+  }
+]
