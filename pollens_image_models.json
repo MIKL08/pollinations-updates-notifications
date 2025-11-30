@@ -10,7 +10,7 @@
       "image"
     ],
     "pricing": {
-      "currency": "USD",
+      "currency": "pollen",
       "image_price": 0.00012
     }
   },
@@ -30,7 +30,7 @@
     ],
     "pricing": {
       "cached_token_price": 2.0000000000000002e-07,
-      "currency": "USD",
+      "currency": "pollen",
       "image_price": 8e-06,
       "input_token_price": 2e-06
     }
@@ -47,7 +47,7 @@
       "image"
     ],
     "pricing": {
-      "currency": "USD",
+      "currency": "pollen",
       "image_price": 0.04
     }
   },
@@ -63,7 +63,7 @@
       "image"
     ],
     "pricing": {
-      "currency": "USD",
+      "currency": "pollen",
       "image_price": 3e-05,
       "input_token_price": 3e-07
     }
@@ -80,7 +80,7 @@
       "image"
     ],
     "pricing": {
-      "currency": "USD",
+      "currency": "pollen",
       "image_price": 0.00012,
       "input_token_price": 1.25e-06
     }
@@ -97,7 +97,7 @@
       "image"
     ],
     "pricing": {
-      "currency": "USD",
+      "currency": "pollen",
       "image_price": 0.03
     }
   },
@@ -112,7 +112,7 @@
       "image"
     ],
     "pricing": {
-      "currency": "USD",
+      "currency": "pollen",
       "image_price": 0.0003
     }
   }
