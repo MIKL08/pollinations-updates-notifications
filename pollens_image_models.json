@@ -87,6 +87,21 @@
   },
   {
     "aliases": [],
+    "description": "Seedance - BytePlus video generation (preview)",
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "name": "seedance",
+    "output_modalities": [
+      "video"
+    ],
+    "pricing": {
+      "currency": "pollen"
+    }
+  },
+  {
+    "aliases": [],
     "description": "Seedream 4.0 - ByteDance ARK",
     "input_modalities": [
       "text",
@@ -114,6 +129,23 @@
     "pricing": {
       "currency": "pollen",
       "image_price": 0.0003
+    }
+  },
+  {
+    "aliases": [
+      "veo-3.1-fast",
+      "video"
+    ],
+    "description": "Veo 3.1 Fast - Google's video generation model (preview)",
+    "input_modalities": [
+      "text"
+    ],
+    "name": "veo",
+    "output_modalities": [
+      "video"
+    ],
+    "pricing": {
+      "currency": "pollen"
     }
   }
 ]
