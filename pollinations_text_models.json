@@ -1,1 +1,320 @@
-[{"name":"deepseek","description":"DeepSeek V3.1","maxInputChars":10000,"reasoning":true,"tier":"seed","community":false,"input_modalities":["text"],"output_modalities":["text"],"tools":true,"aliases":["deepseek-v3","deepseek-v3.1","deepseek-reasoning","deepseek-r1-0528"],"vision":false,"audio":false},{"name":"gemini","description":"Gemini 2.5 Flash Lite","tier":"seed","community":false,"input_modalities":["text","image"],"output_modalities":["text"],"tools":true,"aliases":["gemini-2.5-flash-lite"],"vision":true,"audio":false},{"name":"gemini-search","description":"Gemini 2.5 Flash Lite with Google Search","tier":"seed","community":false,"input_modalities":["text","image"],"output_modalities":["text"],"tools":true,"aliases":["searchgpt","geminisearch"],"vision":true,"audio":false},{"name":"mistral","description":"Mistral Small 3.2 24B","tier":"seed","community":false,"input_modalities":["text"],"output_modalities":["text"],"tools":true,"aliases":["mistral-small-3.1-24b-instruct","mistral-small-3.1-24b-instruct-2503","mistral-small-3.2-24b-instruct-2506"],"vision":false,"audio":false},{"name":"openai","description":"OpenAI GPT-5 Nano","tier":"anonymous","community":false,"input_modalities":["text","image"],"output_modalities":["text"],"tools":true,"maxInputChars":7000,"aliases":["gpt-5-mini"],"vision":true,"audio":false},{"name":"openai-audio","description":"OpenAI GPT-4o Mini Audio Preview","maxInputChars":5000,"voices":["alloy","echo","fable","onyx","nova","shimmer","coral","verse","ballad","ash","sage","amuch","dan"],"tier":"seed","community":false,"input_modalities":["text","image","audio"],"output_modalities":["audio","text"],"tools":true,"aliases":["gpt-4o-mini-audio-preview"],"vision":true,"audio":true},{"name":"openai-fast","description":"OpenAI GPT-4.1 Nano","tier":"anonymous","community":false,"input_modalities":["text","image"],"output_modalities":["text"],"tools":true,"maxInputChars":5000,"aliases":["gpt-5-nano"],"vision":true,"audio":false},{"name":"openai-reasoning","description":"OpenAI o4 Mini","tier":"seed","community":false,"reasoning":true,"supportsSystemMessages":false,"input_modalities":["text","image"],"output_modalities":["text"],"tools":true,"aliases":["o4-mini"],"vision":true,"audio":false},{"name":"qwen-coder","description":"Qwen 2.5 Coder 32B","tier":"flower","community":false,"input_modalities":["text"],"output_modalities":["text"],"tools":true,"aliases":["qwen2.5-coder-32b-instruct"],"vision":false,"audio":false},{"name":"roblox-rp","description":"Llama 3.1 8B Instruct","tier":"seed","community":false,"input_modalities":["text"],"output_modalities":["text"],"tools":true,"aliases":["llama-roblox","llama-fast-roblox"],"vision":false,"audio":false},{"name":"bidara","description":"BIDARA (Biomimetic Designer and Research Assistant by NASA)","tier":"anonymous","community":true,"input_modalities":["text","image"],"output_modalities":["text"],"tools":true,"aliases":[],"vision":true,"audio":false},{"name":"chickytutor","description":"ChickyTutor AI Language Tutor - (chickytutor.com)","tier":"anonymous","community":true,"input_modalities":["text"],"output_modalities":["text"],"tools":true,"aliases":[],"vision":false,"audio":false},{"name":"evil","description":"Evil","uncensored":true,"tier":"seed","community":true,"input_modalities":["text","image"],"output_modalities":["text"],"tools":true,"aliases":[],"vision":true,"audio":false},{"name":"midijourney","description":"MIDIjourney","tier":"anonymous","community":true,"input_modalities":["text"],"output_modalities":["text"],"tools":true,"aliases":[],"vision":false,"audio":false},{"name":"rtist","description":"Rtist","tier":"seed","community":true,"input_modalities":["text"],"output_modalities":["text"],"tools":true,"aliases":[],"vision":false,"audio":false},{"name":"unity","description":"Unity Unrestricted Agent","uncensored":true,"tier":"seed","community":true,"input_modalities":["text","image"],"output_modalities":["text"],"tools":true,"aliases":[],"vision":true,"audio":false}]
+[
+  {
+    "aliases": [],
+    "audio": false,
+    "community": true,
+    "description": "BIDARA (Biomimetic Designer and Research Assistant by NASA)",
+    "input_modalities": [
+      "image",
+      "text"
+    ],
+    "name": "bidara",
+    "output_modalities": [
+      "text"
+    ],
+    "tier": "anonymous",
+    "tools": true,
+    "vision": true
+  },
+  {
+    "aliases": [],
+    "audio": false,
+    "community": true,
+    "description": "ChickyTutor AI Language Tutor - (chickytutor.com)",
+    "input_modalities": [
+      "text"
+    ],
+    "name": "chickytutor",
+    "output_modalities": [
+      "text"
+    ],
+    "tier": "anonymous",
+    "tools": true,
+    "vision": false
+  },
+  {
+    "aliases": [
+      "deepseek-v3",
+      "deepseek-v3.1",
+      "deepseek-reasoning",
+      "deepseek-r1-0528"
+    ],
+    "audio": false,
+    "community": false,
+    "description": "DeepSeek V3.1",
+    "input_modalities": [
+      "text"
+    ],
+    "maxInputChars": 10000,
+    "name": "deepseek",
+    "output_modalities": [
+      "text"
+    ],
+    "reasoning": true,
+    "tier": "seed",
+    "tools": true,
+    "vision": false
+  },
+  {
+    "aliases": [],
+    "audio": false,
+    "community": true,
+    "description": "Evil",
+    "input_modalities": [
+      "image",
+      "text"
+    ],
+    "name": "evil",
+    "output_modalities": [
+      "text"
+    ],
+    "tier": "seed",
+    "tools": true,
+    "uncensored": true,
+    "vision": true
+  },
+  {
+    "aliases": [
+      "gemini-2.5-flash-lite"
+    ],
+    "audio": false,
+    "community": false,
+    "description": "Gemini 2.5 Flash Lite",
+    "input_modalities": [
+      "image",
+      "text"
+    ],
+    "name": "gemini",
+    "output_modalities": [
+      "text"
+    ],
+    "tier": "seed",
+    "tools": true,
+    "vision": true
+  },
+  {
+    "aliases": [
+      "searchgpt",
+      "geminisearch"
+    ],
+    "audio": false,
+    "community": false,
+    "description": "Gemini 2.5 Flash Lite with Google Search",
+    "input_modalities": [
+      "image",
+      "text"
+    ],
+    "name": "gemini-search",
+    "output_modalities": [
+      "text"
+    ],
+    "tier": "seed",
+    "tools": true,
+    "vision": true
+  },
+  {
+    "aliases": [],
+    "audio": false,
+    "community": true,
+    "description": "MIDIjourney",
+    "input_modalities": [
+      "text"
+    ],
+    "name": "midijourney",
+    "output_modalities": [
+      "text"
+    ],
+    "tier": "anonymous",
+    "tools": true,
+    "vision": false
+  },
+  {
+    "aliases": [
+      "mistral-small-3.1-24b-instruct",
+      "mistral-small-3.1-24b-instruct-2503",
+      "mistral-small-3.2-24b-instruct-2506"
+    ],
+    "audio": false,
+    "community": false,
+    "description": "Mistral Small 3.2 24B",
+    "input_modalities": [
+      "text"
+    ],
+    "name": "mistral",
+    "output_modalities": [
+      "text"
+    ],
+    "tier": "seed",
+    "tools": true,
+    "vision": false
+  },
+  {
+    "aliases": [
+      "gpt-5-mini"
+    ],
+    "audio": false,
+    "community": false,
+    "description": "OpenAI GPT-5 Nano",
+    "input_modalities": [
+      "image",
+      "text"
+    ],
+    "maxInputChars": 7000,
+    "name": "openai",
+    "output_modalities": [
+      "text"
+    ],
+    "tier": "anonymous",
+    "tools": true,
+    "vision": true
+  },
+  {
+    "aliases": [
+      "gpt-4o-mini-audio-preview"
+    ],
+    "audio": true,
+    "community": false,
+    "description": "OpenAI GPT-4o Mini Audio Preview",
+    "input_modalities": [
+      "audio",
+      "image",
+      "text"
+    ],
+    "maxInputChars": 2500,
+    "name": "openai-audio",
+    "output_modalities": [
+      "audio",
+      "text"
+    ],
+    "tier": "seed",
+    "tools": true,
+    "vision": true,
+    "voices": [
+      "alloy",
+      "amuch",
+      "ash",
+      "ballad",
+      "coral",
+      "dan",
+      "echo",
+      "fable",
+      "nova",
+      "onyx",
+      "sage",
+      "shimmer",
+      "verse"
+    ]
+  },
+  {
+    "aliases": [
+      "gpt-5-nano"
+    ],
+    "audio": false,
+    "community": false,
+    "description": "OpenAI GPT-4.1 Nano",
+    "input_modalities": [
+      "image",
+      "text"
+    ],
+    "maxInputChars": 5000,
+    "name": "openai-fast",
+    "output_modalities": [
+      "text"
+    ],
+    "tier": "anonymous",
+    "tools": true,
+    "vision": true
+  },
+  {
+    "aliases": [
+      "o4-mini"
+    ],
+    "audio": false,
+    "community": false,
+    "description": "OpenAI o4 Mini",
+    "input_modalities": [
+      "image",
+      "text"
+    ],
+    "name": "openai-reasoning",
+    "output_modalities": [
+      "text"
+    ],
+    "reasoning": true,
+    "supportsSystemMessages": false,
+    "tier": "seed",
+    "tools": true,
+    "vision": true
+  },
+  {
+    "aliases": [
+      "qwen2.5-coder-32b-instruct"
+    ],
+    "audio": false,
+    "community": false,
+    "description": "Qwen 2.5 Coder 32B",
+    "input_modalities": [
+      "text"
+    ],
+    "name": "qwen-coder",
+    "output_modalities": [
+      "text"
+    ],
+    "tier": "flower",
+    "tools": true,
+    "vision": false
+  },
+  {
+    "aliases": [
+      "llama-roblox",
+      "llama-fast-roblox"
+    ],
+    "audio": false,
+    "community": false,
+    "description": "Llama 3.1 8B Instruct",
+    "input_modalities": [
+      "text"
+    ],
+    "name": "roblox-rp",
+    "output_modalities": [
+      "text"
+    ],
+    "tier": "seed",
+    "tools": true,
+    "vision": false
+  },
+  {
+    "aliases": [],
+    "audio": false,
+    "community": true,
+    "description": "Rtist",
+    "input_modalities": [
+      "text"
+    ],
+    "name": "rtist",
+    "output_modalities": [
+      "text"
+    ],
+    "tier": "seed",
+    "tools": true,
+    "vision": false
+  },
+  {
+    "aliases": [],
+    "audio": false,
+    "community": true,
+    "description": "Unity Unrestricted Agent",
+    "input_modalities": [
+      "image",
+      "text"
+    ],
+    "name": "unity",
+    "output_modalities": [
+      "text"
+    ],
+    "tier": "seed",
+    "tools": true,
+    "uncensored": true,
+    "vision": true
+  }
+]
