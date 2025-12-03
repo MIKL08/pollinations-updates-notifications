@@ -87,7 +87,7 @@
   },
   {
     "aliases": [],
-    "description": "Seedance - BytePlus video generation (preview)",
+    "description": "Seedance Pro-Fast - BytePlus video generation",
     "input_modalities": [
       "text",
       "image"
@@ -102,7 +102,7 @@
   },
   {
     "aliases": [],
-    "description": "Seedream 4.0 - ByteDance ARK",
+    "description": "Seedream 4.5 - ByteDance ARK (4K, Multi-Image)",
     "input_modalities": [
       "text",
       "image"
@@ -113,7 +113,7 @@
     ],
     "pricing": {
       "currency": "pollen",
-      "image_price": 0.03
+      "image_price": 0.04
     }
   },
   {
