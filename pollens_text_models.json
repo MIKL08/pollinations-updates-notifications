@@ -1,106 +1,101 @@
 [
   {
-    "created": 1764277676742,
+    "created": 1764872125919,
     "id": "chickytutor",
     "object": "model"
   },
   {
-    "created": 1764277676742,
+    "created": 1764872125919,
     "id": "claude",
     "object": "model"
   },
   {
-    "created": 1764277676742,
+    "created": 1764872125919,
     "id": "claude-fast",
     "object": "model"
   },
   {
-    "created": 1764277676742,
+    "created": 1764872125919,
     "id": "claude-large",
     "object": "model"
   },
   {
-    "created": 1764277676742,
+    "created": 1764872125919,
     "id": "deepseek",
     "object": "model"
   },
   {
-    "created": 1764277676742,
+    "created": 1764872125919,
     "id": "gemini",
     "object": "model"
   },
   {
-    "created": 1764277676742,
+    "created": 1764872125919,
     "id": "gemini-large",
     "object": "model"
   },
   {
-    "created": 1764277676742,
+    "created": 1764872125919,
     "id": "gemini-search",
     "object": "model"
   },
   {
-    "created": 1764277676742,
+    "created": 1764872125919,
     "id": "grok",
     "object": "model"
   },
   {
-    "created": 1764277676742,
+    "created": 1764872125919,
     "id": "kimi-k2-thinking",
     "object": "model"
   },
   {
-    "created": 1764277676742,
+    "created": 1764872125919,
     "id": "midijourney",
     "object": "model"
   },
   {
-    "created": 1764277676742,
+    "created": 1764872125919,
     "id": "mistral",
     "object": "model"
   },
   {
-    "created": 1764277676742,
-    "id": "mistral-fast",
-    "object": "model"
-  },
-  {
-    "created": 1764277676742,
+    "created": 1764872125919,
     "id": "openai",
     "object": "model"
   },
   {
-    "created": 1764277676742,
+    "created": 1764872125919,
     "id": "openai-audio",
     "object": "model"
   },
   {
-    "created": 1764277676742,
+    "created": 1764872125919,
     "id": "openai-fast",
     "object": "model"
   },
   {
-    "created": 1764277676742,
+    "created": 1764872125919,
     "id": "openai-large",
     "object": "model"
   },
   {
-    "created": 1764277676742,
+    "created": 1764872125919,
     "id": "openai-reasoning",
     "object": "model"
   },
   {
-    "created": 1764277676742,
+    "created": 1764872125919,
     "id": "perplexity-fast",
     "object": "model"
   },
   {
-    "created": 1764277676742,
+    "created": 1764872125919,
     "id": "perplexity-reasoning",
     "object": "model"
   },
   {
-    "created": 1764277676742,
+    "created": 1764872125919,
     "id": "qwen-coder",
     "object": "model"
   }
