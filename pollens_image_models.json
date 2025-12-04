@@ -87,7 +87,7 @@
   },
   {
     "aliases": [],
-    "description": "Seedance Pro-Fast - BytePlus video generation",
+    "description": "Seedance Lite - BytePlus video generation (better quality)",
     "input_modalities": [
       "text",
       "image"
@@ -102,12 +102,43 @@
   },
   {
     "aliases": [],
-    "description": "Seedream 4.5 - ByteDance ARK (4K, Multi-Image)",
+    "description": "Seedance Pro-Fast - BytePlus video generation (better prompt adherence)",
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "name": "seedance-pro",
+    "output_modalities": [
+      "video"
+    ],
+    "pricing": {
+      "currency": "pollen"
+    }
+  },
+  {
+    "aliases": [],
+    "description": "Seedream 4.0 - ByteDance ARK (better quality)",
     "input_modalities": [
       "text",
       "image"
     ],
     "name": "seedream",
+    "output_modalities": [
+      "image"
+    ],
+    "pricing": {
+      "currency": "pollen",
+      "image_price": 0.03
+    }
+  },
+  {
+    "aliases": [],
+    "description": "Seedream 4.5 Pro - ByteDance ARK (4K, Multi-Image)",
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "name": "seedream-pro",
     "output_modalities": [
       "image"
     ],
