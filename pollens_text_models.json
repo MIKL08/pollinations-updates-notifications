@@ -1,107 +1,478 @@
 [
   {
-    "created": 1764911445408,
-    "id": "chickytutor",
-    "object": "model"
+    "aliases": [],
+    "description": "OpenAI GPT-5 Nano - Ultra Fast & Affordable",
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "is_specialized": false,
+    "name": "openai",
+    "output_modalities": [
+      "text"
+    ],
+    "pricing": {
+      "cached_token_price": 1e-08,
+      "currency": "pollen",
+      "input_token_price": 6e-08,
+      "output_token_price": 4.4e-07
+    },
+    "tools": true
   },
   {
-    "created": 1764911445408,
-    "id": "claude",
-    "object": "model"
+    "aliases": [
+      "gpt-5-nano",
+      "gpt-5-nano-2025-08-07"
+    ],
+    "description": "OpenAI GPT-5 Nano - Ultra Fast & Affordable",
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "is_specialized": false,
+    "name": "openai-fast",
+    "output_modalities": [
+      "text"
+    ],
+    "pricing": {
+      "cached_token_price": 1e-08,
+      "currency": "pollen",
+      "input_token_price": 6e-08,
+      "output_token_price": 4.4e-07
+    },
+    "tools": true
   },
   {
-    "created": 1764911445408,
-    "id": "claude-fast",
-    "object": "model"
+    "aliases": [
+      "gpt-4.1",
+      "gpt-4.1-2025-04-14"
+    ],
+    "description": "OpenAI GPT-4.1 - Most Powerful",
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "is_specialized": false,
+    "name": "openai-large",
+    "output_modalities": [
+      "text"
+    ],
+    "pricing": {
+      "cached_token_price": 5.5e-07,
+      "currency": "pollen",
+      "input_token_price": 2.2e-06,
+      "output_token_price": 8.8e-06
+    },
+    "tools": true
   },
   {
-    "created": 1764911445408,
-    "id": "claude-large",
-    "object": "model"
+    "aliases": [
+      "qwen2.5-coder-32b-instruct"
+    ],
+    "description": "Qwen 2.5 Coder 32B - Specialized for Code Generation",
+    "input_modalities": [
+      "text"
+    ],
+    "is_specialized": false,
+    "name": "qwen-coder",
+    "output_modalities": [
+      "text"
+    ],
+    "pricing": {
+      "currency": "pollen",
+      "input_token_price": 9.000000000000001e-07,
+      "output_token_price": 9.000000000000001e-07
+    },
+    "tools": true
   },
   {
-    "created": 1764911445408,
-    "id": "deepseek",
-    "object": "model"
+    "aliases": [
+      "mistral-small",
+      "mistral-small-3.2",
+      "mistral-small-3.2-24b-instruct-2506"
+    ],
+    "description": "Mistral Small 3.2 24B - Efficient & Cost-Effective",
+    "input_modalities": [
+      "text"
+    ],
+    "is_specialized": false,
+    "name": "mistral",
+    "output_modalities": [
+      "text"
+    ],
+    "pricing": {
+      "currency": "pollen",
+      "input_token_price": 1.5e-07,
+      "output_token_price": 3.5e-07
+    },
+    "tools": true
   },
   {
-    "created": 1764911445408,
-    "id": "gemini",
-    "object": "model"
+    "aliases": [
+      "gpt-4o-mini-audio-preview",
+      "gpt-4o-mini-audio-preview-2024-12-17"
+    ],
+    "description": "OpenAI GPT-4o Mini Audio - Voice Input & Output",
+    "input_modalities": [
+      "text",
+      "image",
+      "audio"
+    ],
+    "is_specialized": false,
+    "name": "openai-audio",
+    "output_modalities": [
+      "audio",
+      "text"
+    ],
+    "pricing": {
+      "audio_input_price": 1.1e-05,
+      "audio_output_price": 2.2e-05,
+      "currency": "pollen",
+      "input_token_price": 1.65e-07,
+      "output_token_price": 6.6e-07
+    },
+    "tools": true,
+    "voices": [
+      "alloy",
+      "echo",
+      "fable",
+      "onyx",
+      "nova",
+      "shimmer",
+      "coral",
+      "verse",
+      "ballad",
+      "ash",
+      "sage",
+      "amuch",
+      "dan"
+    ]
   },
   {
-    "created": 1764911445408,
-    "id": "gemini-large",
-    "object": "model"
+    "aliases": [
+      "o4-mini"
+    ],
+    "description": "OpenAI o4 Mini - Advanced Reasoning",
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "is_specialized": false,
+    "name": "openai-reasoning",
+    "output_modalities": [
+      "text"
+    ],
+    "pricing": {
+      "cached_token_price": 3.1e-07,
+      "currency": "pollen",
+      "input_token_price": 1.21e-06,
+      "output_token_price": 4.84e-06
+    },
+    "reasoning": true,
+    "tools": true
   },
   {
-    "created": 1764911445408,
-    "id": "gemini-search",
-    "object": "model"
+    "aliases": [
+      "gemini-2.5-flash-lite"
+    ],
+    "description": "Google Gemini 2.5 Flash Lite - Fast & Multimodal",
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "is_specialized": false,
+    "name": "gemini",
+    "output_modalities": [
+      "text"
+    ],
+    "pricing": {
+      "cached_token_price": 1e-08,
+      "currency": "pollen",
+      "input_token_price": 1.0000000000000001e-07,
+      "output_token_price": 4.0000000000000003e-07
+    },
+    "tools": true
   },
   {
-    "created": 1764911445408,
-    "id": "grok",
-    "object": "model"
+    "aliases": [
+      "deepseek-v3",
+      "deepseek-v3.1",
+      "deepseek-reasoning",
+      "deepseek-r1-0528"
+    ],
+    "description": "DeepSeek V3.1 - Advanced Reasoning & Coding",
+    "input_modalities": [
+      "text"
+    ],
+    "is_specialized": false,
+    "name": "deepseek",
+    "output_modalities": [
+      "text"
+    ],
+    "pricing": {
+      "currency": "pollen",
+      "input_token_price": 1.25e-06,
+      "output_token_price": 5e-06
+    },
+    "reasoning": true,
+    "tools": true
   },
   {
-    "created": 1764911445408,
-    "id": "kimi-k2-thinking",
-    "object": "model"
+    "aliases": [
+      "grok-fast",
+      "grok-4",
+      "grok-4-fast"
+    ],
+    "description": "xAI Grok 4 Fast - High Speed & Real-Time",
+    "input_modalities": [
+      "text"
+    ],
+    "is_specialized": false,
+    "name": "grok",
+    "output_modalities": [
+      "text"
+    ],
+    "pricing": {
+      "cached_token_price": 2.0000000000000002e-07,
+      "currency": "pollen",
+      "input_token_price": 2.0000000000000002e-07,
+      "output_token_price": 5e-07
+    },
+    "tools": true
   },
   {
-    "created": 1764911445408,
-    "id": "midijourney",
-    "object": "model"
+    "aliases": [
+      "gemini-2.5-flash-lite-search"
+    ],
+    "description": "Google Gemini 2.5 Flash Lite - With Google Search",
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "is_specialized": false,
+    "name": "gemini-search",
+    "output_modalities": [
+      "text"
+    ],
+    "pricing": {
+      "cached_token_price": 1e-08,
+      "currency": "pollen",
+      "input_token_price": 1.0000000000000001e-07,
+      "output_token_price": 4.0000000000000003e-07
+    },
+    "tools": true
   },
   {
-    "created": 1764911445408,
-    "id": "mistral",
-    "object": "model"
+    "aliases": [],
+    "description": "ChickyTutor AI Language Tutor - (chickytutor.com)",
+    "input_modalities": [
+      "text"
+    ],
+    "is_specialized": true,
+    "name": "chickytutor",
+    "output_modalities": [
+      "text"
+    ],
+    "pricing": {
+      "currency": "pollen",
+      "input_token_price": 8.000000000000001e-07,
+      "output_token_price": 4e-06
+    },
+    "tools": true
   },
   {
-    "created": 1764911445408,
-    "id": "nova-micro",
-    "object": "model"
+    "aliases": [],
+    "description": "MIDIjourney - AI Music Composition Assistant",
+    "input_modalities": [
+      "text"
+    ],
+    "is_specialized": true,
+    "name": "midijourney",
+    "output_modalities": [
+      "text"
+    ],
+    "pricing": {
+      "cached_token_price": 5.5e-07,
+      "currency": "pollen",
+      "input_token_price": 2.2e-06,
+      "output_token_price": 8.8e-06
+    },
+    "tools": true
   },
   {
-    "created": 1764911445408,
-    "id": "openai",
-    "object": "model"
+    "aliases": [
+      "claude-haiku-4.5",
+      "claude-haiku"
+    ],
+    "description": "Anthropic Claude Haiku 4.5 - Fast & Intelligent",
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "is_specialized": false,
+    "name": "claude-fast",
+    "output_modalities": [
+      "text"
+    ],
+    "pricing": {
+      "currency": "pollen",
+      "input_token_price": 1e-06,
+      "output_token_price": 5e-06
+    },
+    "tools": true
   },
   {
-    "created": 1764911445408,
-    "id": "openai-audio",
-    "object": "model"
+    "aliases": [
+      "claude-sonnet-4.5",
+      "claude-sonnet"
+    ],
+    "description": "Anthropic Claude Sonnet 4.5 - Most Capable & Balanced",
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "is_specialized": false,
+    "name": "claude",
+    "output_modalities": [
+      "text"
+    ],
+    "pricing": {
+      "currency": "pollen",
+      "input_token_price": 3e-06,
+      "output_token_price": 1.5e-05
+    },
+    "tools": true
   },
   {
-    "created": 1764911445408,
-    "id": "openai-fast",
-    "object": "model"
+    "aliases": [
+      "claude-opus-4.5",
+      "claude-opus"
+    ],
+    "description": "Anthropic Claude Opus 4.5 - Most Intelligent Model",
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "is_specialized": false,
+    "name": "claude-large",
+    "output_modalities": [
+      "text"
+    ],
+    "pricing": {
+      "currency": "pollen",
+      "input_token_price": 5e-06,
+      "output_token_price": 2.5e-05
+    },
+    "tools": true
   },
   {
-    "created": 1764911445408,
-    "id": "openai-large",
-    "object": "model"
+    "aliases": [
+      "sonar"
+    ],
+    "description": "Perplexity Sonar - Fast & Affordable with Web Search",
+    "input_modalities": [
+      "text"
+    ],
+    "is_specialized": false,
+    "name": "perplexity-fast",
+    "output_modalities": [
+      "text"
+    ],
+    "pricing": {
+      "currency": "pollen",
+      "input_token_price": 1e-06,
+      "output_token_price": 1e-06
+    },
+    "tools": true
   },
   {
-    "created": 1764911445408,
-    "id": "openai-reasoning",
-    "object": "model"
+    "aliases": [
+      "sonar-reasoning"
+    ],
+    "description": "Perplexity Sonar Reasoning - Advanced Reasoning with Web Search",
+    "input_modalities": [
+      "text"
+    ],
+    "is_specialized": false,
+    "name": "perplexity-reasoning",
+    "output_modalities": [
+      "text"
+    ],
+    "pricing": {
+      "currency": "pollen",
+      "input_token_price": 1e-06,
+      "output_token_price": 5e-06
+    },
+    "reasoning": true,
+    "tools": true
   },
   {
-    "created": 1764911445408,
-    "id": "perplexity-fast",
-    "object": "model"
+    "aliases": [
+      "kimi-k2",
+      "kimi-thinking"
+    ],
+    "description": "Moonshot Kimi K2 Thinking - Deep Reasoning & Tool Orchestration",
+    "input_modalities": [
+      "text"
+    ],
+    "is_specialized": false,
+    "name": "kimi-k2-thinking",
+    "output_modalities": [
+      "text"
+    ],
+    "pricing": {
+      "currency": "pollen",
+      "input_token_price": 6e-07,
+      "output_token_price": 2.5e-06
+    },
+    "reasoning": true,
+    "tools": true
   },
   {
-    "created": 1764911445408,
-    "id": "perplexity-reasoning",
-    "object": "model"
+    "aliases": [
+      "gemini-3-pro",
+      "gemini-3",
+      "gemini-3-pro-preview"
+    ],
+    "description": "Google Gemini 3 Pro - Most Intelligent Model with 1M Context (Preview)",
+    "input_modalities": [
+      "text",
+      "image",
+      "audio",
+      "video"
+    ],
+    "is_specialized": false,
+    "name": "gemini-large",
+    "output_modalities": [
+      "text"
+    ],
+    "pricing": {
+      "currency": "pollen",
+      "input_token_price": 2e-06,
+      "output_token_price": 1.2e-05
+    },
+    "reasoning": true,
+    "tools": true
   },
   {
-    "created": 1764911445408,
-    "id": "qwen-coder",
-    "object": "model"
+    "aliases": [
+      "amazon-nova-micro",
+      "nova"
+    ],
+    "description": "Amazon Nova Micro - Ultra Fast & Ultra Cheap",
+    "input_modalities": [
+      "text"
+    ],
+    "is_specialized": false,
+    "name": "nova-micro",
+    "output_modalities": [
+      "text"
+    ],
+    "pricing": {
+      "currency": "pollen",
+      "input_token_price": 3.5e-08,
+      "output_token_price": 1.4e-07
+    },
+    "tools": true
   }
 ]
