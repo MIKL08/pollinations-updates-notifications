@@ -371,7 +371,7 @@ jobs:
 
           models = data.get("data", []) if isinstance(data, dict) else data
           normalized = [dict(m) for m in models]
-          normalized.sort(key=lambda x: str(x.get("id","")))
+          normalized.sort(key=lambda x: str(x.get("name","")))
 
           curr_txt = json.dumps(normalized, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
 
@@ -387,7 +387,7 @@ jobs:
           prev = json.loads(prev_path.read_text(encoding="utf-8"))
 
           def to_map(items):
-              return {str(i.get("id","")): i for i in items if i.get("id")}
+              return {str(i.get("name","")): i for i in items if i.get("name")}
 
           prev_map = to_map(prev)
           curr_map = to_map(normalized)
