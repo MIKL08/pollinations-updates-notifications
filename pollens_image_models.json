@@ -184,7 +184,7 @@
       "z-image",
       "z-image-turbo"
     ],
-    "description": "Z-Image-Turbo - Fast 6B parameter image generation",
+    "description": "Z-Image-Turbo - Fast 6B parameter image generation (alpha)",
     "input_modalities": [
       "text"
     ],
