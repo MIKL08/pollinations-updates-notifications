@@ -178,5 +178,23 @@
     "pricing": {
       "currency": "pollen"
     }
+  },
+  {
+    "aliases": [
+      "z-image",
+      "z-image-turbo"
+    ],
+    "description": "Z-Image-Turbo - Fast 6B parameter image generation",
+    "input_modalities": [
+      "text"
+    ],
+    "name": "zimage",
+    "output_modalities": [
+      "image"
+    ],
+    "pricing": {
+      "currency": "pollen",
+      "image_price": 0.0002
+    }
   }
 ]
