@@ -370,7 +370,9 @@
   },
   {
     "aliases": [
-      "gpt-5.2"
+      "gpt-5.2",
+      "openai-reasoning",
+      "gpt-5.2-reasoning"
     ],
     "description": "OpenAI GPT-5.2 - Most Powerful & Intelligent",
     "input_modalities": [
@@ -383,33 +385,10 @@
       "text"
     ],
     "pricing": {
-      "cached_token_price": 1.25e-07,
+      "cached_token_price": 1.75e-07,
       "currency": "pollen",
-      "input_token_price": 5e-07,
-      "output_token_price": 2e-06
-    },
-    "reasoning": true,
-    "tools": true
-  },
-  {
-    "aliases": [
-      "gpt-5.2-reasoning"
-    ],
-    "description": "OpenAI GPT-5.2 - Hybrid Reasoning Model",
-    "input_modalities": [
-      "text",
-      "image"
-    ],
-    "is_specialized": false,
-    "name": "openai-reasoning",
-    "output_modalities": [
-      "text"
-    ],
-    "pricing": {
-      "cached_token_price": 1.25e-07,
-      "currency": "pollen",
-      "input_token_price": 5e-07,
-      "output_token_price": 2e-06
+      "input_token_price": 1.75e-06,
+      "output_token_price": 1.4e-05
     },
     "reasoning": true,
     "tools": true
