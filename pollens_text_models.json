@@ -175,7 +175,7 @@
       "input_token_price": 1.0000000000000001e-07,
       "output_token_price": 4.0000000000000003e-07
     },
-    "tools": true
+    "tools": false
   },
   {
     "aliases": [
@@ -411,7 +411,7 @@
       "input_token_price": 1e-06,
       "output_token_price": 1e-06
     },
-    "tools": true
+    "tools": false
   },
   {
     "aliases": [
@@ -432,7 +432,7 @@
       "output_token_price": 5e-06
     },
     "reasoning": true,
-    "tools": true
+    "tools": false
   },
   {
     "aliases": [
