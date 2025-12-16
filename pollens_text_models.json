@@ -148,6 +148,7 @@
       "text"
     ],
     "pricing": {
+      "cached_token_price": 2.0000000000000002e-07,
       "currency": "pollen",
       "input_token_price": 2e-06,
       "output_token_price": 1.2e-05
