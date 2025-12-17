@@ -170,43 +170,6 @@
   },
   {
     "aliases": [
-      "gpt-4o-mini-audio-preview"
-    ],
-    "audio": true,
-    "community": false,
-    "description": "OpenAI GPT-4o Mini Audio Preview",
-    "input_modalities": [
-      "audio",
-      "image",
-      "text"
-    ],
-    "maxInputChars": 2500,
-    "name": "openai-audio",
-    "output_modalities": [
-      "audio",
-      "text"
-    ],
-    "tier": "seed",
-    "tools": true,
-    "vision": true,
-    "voices": [
-      "alloy",
-      "amuch",
-      "ash",
-      "ballad",
-      "coral",
-      "dan",
-      "echo",
-      "fable",
-      "nova",
-      "onyx",
-      "sage",
-      "shimmer",
-      "verse"
-    ]
-  },
-  {
-    "aliases": [
       "gpt-5-nano"
     ],
     "audio": false,
@@ -222,27 +185,6 @@
       "text"
     ],
     "tier": "anonymous",
-    "tools": true,
-    "vision": true
-  },
-  {
-    "aliases": [
-      "o4-mini"
-    ],
-    "audio": false,
-    "community": false,
-    "description": "OpenAI o4 Mini",
-    "input_modalities": [
-      "image",
-      "text"
-    ],
-    "name": "openai-reasoning",
-    "output_modalities": [
-      "text"
-    ],
-    "reasoning": true,
-    "supportsSystemMessages": false,
-    "tier": "seed",
     "tools": true,
     "vision": true
   },
