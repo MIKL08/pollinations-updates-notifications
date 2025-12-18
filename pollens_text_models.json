@@ -109,15 +109,40 @@
   },
   {
     "aliases": [
+      "gemini-3-flash",
+      "gemini-3-flash-preview"
+    ],
+    "description": "Google Gemini 3 Flash - Pro-Grade Reasoning at Flash Speed",
+    "input_modalities": [
+      "text",
+      "image",
+      "audio",
+      "video"
+    ],
+    "is_specialized": false,
+    "name": "gemini",
+    "output_modalities": [
+      "text"
+    ],
+    "pricing": {
+      "cached_token_price": 5.0000000000000004e-08,
+      "currency": "pollen",
+      "input_token_price": 5e-07,
+      "output_token_price": 3e-06
+    },
+    "tools": true
+  },
+  {
+    "aliases": [
       "gemini-2.5-flash-lite"
     ],
-    "description": "Google Gemini 2.5 Flash Lite - Fast & Multimodal",
+    "description": "Google Gemini 2.5 Flash Lite - Ultra Fast & Cost-Effective",
     "input_modalities": [
       "text",
       "image"
     ],
     "is_specialized": false,
-    "name": "gemini",
+    "name": "gemini-fast",
     "output_modalities": [
       "text"
     ],
@@ -158,9 +183,9 @@
   },
   {
     "aliases": [
-      "gemini-2.5-flash-lite-search"
+      "gemini-3-flash-search"
     ],
-    "description": "Google Gemini 2.5 Flash Lite - With Google Search",
+    "description": "Google Gemini 3 Flash - With Google Search",
     "input_modalities": [
       "text",
       "image"
@@ -171,10 +196,10 @@
       "text"
     ],
     "pricing": {
-      "cached_token_price": 1e-08,
+      "cached_token_price": 5.0000000000000004e-08,
       "currency": "pollen",
-      "input_token_price": 1.0000000000000001e-07,
-      "output_token_price": 4.0000000000000003e-07
+      "input_token_price": 5e-07,
+      "output_token_price": 3e-06
     },
     "tools": false
   },
