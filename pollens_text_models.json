@@ -125,6 +125,7 @@
       "text"
     ],
     "pricing": {
+      "audio_input_price": 5e-07,
       "cached_token_price": 5.0000000000000004e-08,
       "currency": "pollen",
       "input_token_price": 5e-07,
@@ -147,6 +148,7 @@
       "text"
     ],
     "pricing": {
+      "audio_input_price": 1.0000000000000001e-07,
       "cached_token_price": 1e-08,
       "currency": "pollen",
       "input_token_price": 1.0000000000000001e-07,
@@ -196,6 +198,7 @@
       "text"
     ],
     "pricing": {
+      "audio_input_price": 5e-07,
       "cached_token_price": 5.0000000000000004e-08,
       "currency": "pollen",
       "input_token_price": 5e-07,
