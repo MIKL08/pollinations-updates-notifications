@@ -430,6 +430,7 @@ jobs:
           if modified:
               lines.append("\n<b>> Updated models:</b>")
               for n in sorted(modified):
+                  m = curr_map[n]
                   lines.append(f"  - <code>{n}</code> (Description: {m.get('description','?')}):")
                   for k,ch in modified[n].items():
                       lines.append(f"      • {k}: {ch['old']} → {ch['new']}")
@@ -595,6 +596,7 @@ jobs:
           if modified:
               lines.append("\n<b>> Updated models:</b>")
               for n in sorted(modified):
+                  m = curr_map[n]
                   lines.append(f"  - <code>{n}</code> (Description: {m.get('description','?')}):")
                   for k,ch in modified[n].items():
                       lines.append(f"      • {k}: {ch['old']} → {ch['new']}")
