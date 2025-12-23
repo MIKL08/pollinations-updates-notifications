@@ -433,28 +433,28 @@ jobs:
           if added:
               for n in added:
                   m = curr_map[n]
-                  block = f"  • <code>{n}</code> ({m.get('description','?')})"
+                  block = f"  - <code>{n}</code> (Description: {m.get('description','?')})"
                   blocks.append(("added", block))
 
           if removed:
               for n in removed:
                   m = prev_map[n]
-                  block = f"  • <code>{n}</code> ({m.get('description','?')})"
+                  block = f"  - <code>{n}</code> (Description: {m.get('description','?')})"
                   blocks.append(("removed", block))
 
           if modified:
               for n in sorted(modified):
                   m = curr_map[n]
-                  mlines = [f"  • <code>{n}</code>:"]
+                  mlines = [f"  - <code>{n}</code> (Description: {m.get('description','?')}):"]
                   for k, ch in sorted(modified[n].items()):
-                      mlines.append(f"      ◦ <code>{k}</code>: {ch['old']} → {ch['new']}")
+                      mlines.append(f"      • {k}: {ch['old']} → {ch['new']}")
                   blocks.append(("modified", "\n".join(mlines)))
 
           header_base = "<b>💬 Pollinations AI Text Models Update:</b>"
           section_headers = {
-              "added": "<b>+ Added models:</b>",
-              "removed": "<b>− Deleted models:</b>",
-              "modified": "<b>~ Updated models:</b>"
+              "added": "\n<b>+ Added models:</b>",
+              "removed": "\n<b>- Deleted models:</b>",
+              "modified": "\n<b>&gt; Updated models:</b>"
           }
 
           parts = []
@@ -466,8 +466,6 @@ jobs:
               to_add = []
               
               if section != current_section:
-                  if current_lines:
-                      to_add.append("")
                   to_add.append(section_headers[section])
               
               to_add.append(block)
@@ -492,11 +490,8 @@ jobs:
 
           total = len(parts)
           for i, part in enumerate(parts):
-              if total > 1:
-                  header = f"{header_base} (Part {i+1}/{total})\n\n{part}"
-              else:
-                  header = f"{header_base}\n\n{part}"
-              Path(f"/tmp/message_part_{i}.txt").write_text(header, encoding="utf-8")
+              full_msg = f"{header_base}\n{part}"
+              Path(f"/tmp/message_part_{i}.txt").write_text(full_msg, encoding="utf-8")
 
           Path("/tmp/changed.flag").write_text("true", encoding="utf-8")
           Path("/tmp/parts_count.txt").write_text(str(total), encoding="utf-8")
@@ -657,28 +652,28 @@ jobs:
           if added:
               for n in added:
                   m = curr_map[n]
-                  block = f"  • <code>{n}</code> ({m.get('description','?')})"
+                  block = f"  - <code>{n}</code> (Description: {m.get('description','?')})"
                   blocks.append(("added", block))
 
           if removed:
               for n in removed:
                   m = prev_map[n]
-                  block = f"  • <code>{n}</code> ({m.get('description','?')})"
+                  block = f"  - <code>{n}</code> (Description: {m.get('description','?')})"
                   blocks.append(("removed", block))
 
           if modified:
               for n in sorted(modified):
                   m = curr_map[n]
-                  mlines = [f"  • <code>{n}</code>:"]
+                  mlines = [f"  - <code>{n}</code> (Description: {m.get('description','?')}):"]
                   for k, ch in sorted(modified[n].items()):
-                      mlines.append(f"      ◦ <code>{k}</code>: {ch['old']} → {ch['new']}")
+                      mlines.append(f"      • {k}: {ch['old']} → {ch['new']}")
                   blocks.append(("modified", "\n".join(mlines)))
 
           header_base = "<b>🖼️ Pollinations AI Image Models Update:</b>"
           section_headers = {
-              "added": "<b>+ Added models:</b>",
-              "removed": "<b>− Deleted models:</b>",
-              "modified": "<b>~ Updated models:</b>"
+              "added": "\n<b>+ Added models:</b>",
+              "removed": "\n<b>- Deleted models:</b>",
+              "modified": "\n<b>&gt; Updated models:</b>"
           }
 
           parts = []
@@ -690,8 +685,6 @@ jobs:
               to_add = []
               
               if section != current_section:
-                  if current_lines:
-                      to_add.append("")
                   to_add.append(section_headers[section])
               
               to_add.append(block)
@@ -716,11 +709,8 @@ jobs:
 
           total = len(parts)
           for i, part in enumerate(parts):
-              if total > 1:
-                  header = f"{header_base} (Part {i+1}/{total})\n\n{part}"
-              else:
-                  header = f"{header_base}\n\n{part}"
-              Path(f"/tmp/message_part_{i}.txt").write_text(header, encoding="utf-8")
+              full_msg = f"{header_base}\n{part}"
+              Path(f"/tmp/message_part_{i}.txt").write_text(full_msg, encoding="utf-8")
 
           Path("/tmp/changed.flag").write_text("true", encoding="utf-8")
           Path("/tmp/parts_count.txt").write_text(str(total), encoding="utf-8")
