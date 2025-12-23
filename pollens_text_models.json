@@ -86,11 +86,10 @@
   {
     "aliases": [
       "deepseek-v3",
-      "deepseek-v3.1",
-      "deepseek-reasoning",
-      "deepseek-r1-0528"
+      "deepseek-v3.2",
+      "deepseek-reasoning"
     ],
-    "description": "DeepSeek V3.1 - Advanced Reasoning & Coding",
+    "description": "DeepSeek V3.2 - Efficient Reasoning & Agentic AI",
     "input_modalities": [
       "text"
     ],
@@ -100,9 +99,9 @@
       "text"
     ],
     "pricing": {
-      "completionTextTokens": 5e-06,
+      "completionTextTokens": 1.68e-06,
       "currency": "pollen",
-      "promptTextTokens": 1.25e-06
+      "promptTextTokens": 5.8e-07
     },
     "reasoning": true,
     "tools": true
