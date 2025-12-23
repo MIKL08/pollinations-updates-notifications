@@ -11,9 +11,9 @@
       "text"
     ],
     "pricing": {
+      "completionTextTokens": 4e-06,
       "currency": "pollen",
-      "input_token_price": 8.000000000000001e-07,
-      "output_token_price": 4e-06
+      "promptTextTokens": 8.000000000000001e-07
     },
     "tools": true
   },
@@ -33,9 +33,9 @@
       "text"
     ],
     "pricing": {
+      "completionTextTokens": 1.5e-05,
       "currency": "pollen",
-      "input_token_price": 3e-06,
-      "output_token_price": 1.5e-05
+      "promptTextTokens": 3e-06
     },
     "tools": true
   },
@@ -55,9 +55,9 @@
       "text"
     ],
     "pricing": {
+      "completionTextTokens": 5e-06,
       "currency": "pollen",
-      "input_token_price": 1e-06,
-      "output_token_price": 5e-06
+      "promptTextTokens": 1e-06
     },
     "tools": true
   },
@@ -77,9 +77,9 @@
       "text"
     ],
     "pricing": {
+      "completionTextTokens": 2.5e-05,
       "currency": "pollen",
-      "input_token_price": 5e-06,
-      "output_token_price": 2.5e-05
+      "promptTextTokens": 5e-06
     },
     "tools": true
   },
@@ -100,9 +100,9 @@
       "text"
     ],
     "pricing": {
+      "completionTextTokens": 5e-06,
       "currency": "pollen",
-      "input_token_price": 1.25e-06,
-      "output_token_price": 5e-06
+      "promptTextTokens": 1.25e-06
     },
     "reasoning": true,
     "tools": true
@@ -125,11 +125,11 @@
       "text"
     ],
     "pricing": {
-      "audio_input_price": 5e-07,
-      "cached_token_price": 5.0000000000000004e-08,
+      "completionTextTokens": 3e-06,
       "currency": "pollen",
-      "input_token_price": 5e-07,
-      "output_token_price": 3e-06
+      "promptAudioTokens": 5e-07,
+      "promptCachedTokens": 5.0000000000000004e-08,
+      "promptTextTokens": 5e-07
     },
     "tools": true
   },
@@ -148,11 +148,11 @@
       "text"
     ],
     "pricing": {
-      "audio_input_price": 1.0000000000000001e-07,
-      "cached_token_price": 1e-08,
+      "completionTextTokens": 4.0000000000000003e-07,
       "currency": "pollen",
-      "input_token_price": 1.0000000000000001e-07,
-      "output_token_price": 4.0000000000000003e-07
+      "promptAudioTokens": 1.0000000000000001e-07,
+      "promptCachedTokens": 1e-08,
+      "promptTextTokens": 1.0000000000000001e-07
     },
     "tools": true
   },
@@ -175,10 +175,10 @@
       "text"
     ],
     "pricing": {
-      "cached_token_price": 2.0000000000000002e-07,
+      "completionTextTokens": 1.2e-05,
       "currency": "pollen",
-      "input_token_price": 2e-06,
-      "output_token_price": 1.2e-05
+      "promptCachedTokens": 2.0000000000000002e-07,
+      "promptTextTokens": 2e-06
     },
     "reasoning": true,
     "tools": true
@@ -198,11 +198,11 @@
       "text"
     ],
     "pricing": {
-      "audio_input_price": 5e-07,
-      "cached_token_price": 5.0000000000000004e-08,
+      "completionTextTokens": 3e-06,
       "currency": "pollen",
-      "input_token_price": 5e-07,
-      "output_token_price": 3e-06
+      "promptAudioTokens": 5e-07,
+      "promptCachedTokens": 5.0000000000000004e-08,
+      "promptTextTokens": 5e-07
     },
     "tools": false
   },
@@ -222,10 +222,10 @@
       "text"
     ],
     "pricing": {
-      "cached_token_price": 2.0000000000000002e-07,
+      "completionTextTokens": 5e-07,
       "currency": "pollen",
-      "input_token_price": 2.0000000000000002e-07,
-      "output_token_price": 5e-07
+      "promptCachedTokens": 2.0000000000000002e-07,
+      "promptTextTokens": 2.0000000000000002e-07
     },
     "tools": true
   },
@@ -244,9 +244,9 @@
       "text"
     ],
     "pricing": {
+      "completionTextTokens": 2.5e-06,
       "currency": "pollen",
-      "input_token_price": 6e-07,
-      "output_token_price": 2.5e-06
+      "promptTextTokens": 6e-07
     },
     "reasoning": true,
     "tools": true
@@ -263,10 +263,10 @@
       "text"
     ],
     "pricing": {
-      "cached_token_price": 5.5e-07,
+      "completionTextTokens": 8.8e-06,
       "currency": "pollen",
-      "input_token_price": 2.2e-06,
-      "output_token_price": 8.8e-06
+      "promptCachedTokens": 5.5e-07,
+      "promptTextTokens": 2.2e-06
     },
     "tools": true
   },
@@ -286,9 +286,9 @@
       "text"
     ],
     "pricing": {
+      "completionTextTokens": 3.5e-07,
       "currency": "pollen",
-      "input_token_price": 1.5e-07,
-      "output_token_price": 3.5e-07
+      "promptTextTokens": 1.5e-07
     },
     "tools": true
   },
@@ -307,9 +307,9 @@
       "text"
     ],
     "pricing": {
+      "completionTextTokens": 1.4e-07,
       "currency": "pollen",
-      "input_token_price": 3.5e-08,
-      "output_token_price": 1.4e-07
+      "promptTextTokens": 3.5e-08
     },
     "tools": true
   },
@@ -326,10 +326,10 @@
       "text"
     ],
     "pricing": {
-      "cached_token_price": 4e-08,
+      "completionTextTokens": 6e-07,
       "currency": "pollen",
-      "input_token_price": 1.5e-07,
-      "output_token_price": 6e-07
+      "promptCachedTokens": 4e-08,
+      "promptTextTokens": 1.5e-07
     },
     "tools": true
   },
@@ -351,11 +351,11 @@
       "text"
     ],
     "pricing": {
-      "audio_input_price": 1.1e-05,
-      "audio_output_price": 2.2e-05,
+      "completionAudioTokens": 2.2e-05,
+      "completionTextTokens": 6.6e-07,
       "currency": "pollen",
-      "input_token_price": 1.65e-07,
-      "output_token_price": 6.6e-07
+      "promptAudioTokens": 1.1e-05,
+      "promptTextTokens": 1.65e-07
     },
     "tools": true,
     "voices": [
@@ -390,10 +390,10 @@
       "text"
     ],
     "pricing": {
-      "cached_token_price": 1e-08,
+      "completionTextTokens": 4.4e-07,
       "currency": "pollen",
-      "input_token_price": 6e-08,
-      "output_token_price": 4.4e-07
+      "promptCachedTokens": 1e-08,
+      "promptTextTokens": 6e-08
     },
     "tools": true
   },
@@ -414,10 +414,10 @@
       "text"
     ],
     "pricing": {
-      "cached_token_price": 1.75e-07,
+      "completionTextTokens": 1.4e-05,
       "currency": "pollen",
-      "input_token_price": 1.75e-06,
-      "output_token_price": 1.4e-05
+      "promptCachedTokens": 1.75e-07,
+      "promptTextTokens": 1.75e-06
     },
     "reasoning": true,
     "tools": true
@@ -436,9 +436,9 @@
       "text"
     ],
     "pricing": {
+      "completionTextTokens": 1e-06,
       "currency": "pollen",
-      "input_token_price": 1e-06,
-      "output_token_price": 1e-06
+      "promptTextTokens": 1e-06
     },
     "tools": false
   },
@@ -456,9 +456,9 @@
       "text"
     ],
     "pricing": {
+      "completionTextTokens": 5e-06,
       "currency": "pollen",
-      "input_token_price": 1e-06,
-      "output_token_price": 5e-06
+      "promptTextTokens": 1e-06
     },
     "reasoning": true,
     "tools": false
@@ -477,9 +477,9 @@
       "text"
     ],
     "pricing": {
+      "completionTextTokens": 9.000000000000001e-07,
       "currency": "pollen",
-      "input_token_price": 9.000000000000001e-07,
-      "output_token_price": 9.000000000000001e-07
+      "promptTextTokens": 9.000000000000001e-07
     },
     "tools": true
   }
