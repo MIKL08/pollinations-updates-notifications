@@ -428,61 +428,85 @@ jobs:
               Path("/tmp/parts_count.txt").write_text("0", encoding="utf-8")
               sys.exit(0)
 
-          change_lines = []
+          blocks = []
 
           if added:
-              change_lines.append("<b>+ Added models:</b>")
               for n in added:
                   m = curr_map[n]
-                  change_lines.append(f"  • <code>{n}</code> ({m.get('description','?')})")
+                  block = f"  • <code>{n}</code> ({m.get('description','?')})"
+                  blocks.append(("added", block))
 
           if removed:
-              if change_lines:
-                  change_lines.append("")
-              change_lines.append("<b>- Deleted models:</b>")
               for n in removed:
                   m = prev_map[n]
-                  change_lines.append(f"  • <code>{n}</code> ({m.get('description','?')})")
+                  block = f"  • <code>{n}</code> ({m.get('description','?')})"
+                  blocks.append(("removed", block))
 
           if modified:
-              if change_lines:
-                  change_lines.append("")
-              change_lines.append("<b>~ Updated models:</b>")
               for n in sorted(modified):
                   m = curr_map[n]
-                  change_lines.append(f"  • <code>{n}</code>:")
+                  lines = [f"  • <code>{n}</code>:"]
                   for k, ch in sorted(modified[n].items()):
-                      change_lines.append(f"      ◦ <code>{k}</code>: {ch['old']} → {ch['new']}")
+                      lines.append(f"      ◦ <code>{k}</code>: {ch['old']} → {ch['new']}")
+                  blocks.append(("modified", "\n".join(lines)))
 
-          header = "<b>💬 Pollinations AI Text Models Update:</b>\n"
+          header_base = "<b>💬 Pollinations AI Text Models Update:</b>"
+          section_headers = {
+              "added": "<b>+ Added models:</b>",
+              "removed": "<b>− Deleted models:</b>",
+              "modified": "<b>~ Updated models:</b>"
+          }
+
           parts = []
-          current_part = []
+          current_lines = []
+          current_section = None
           current_len = 0
 
-          for line in change_lines:
-              line_len = len(line) + 1  # +1 для \n
-              if current_len + line_len > MAX_LEN and current_part:
-                  parts.append("\n".join(current_part))
-                  current_part = []
-                  current_len = 0
-              current_part.append(line)
-              current_len += line_len
+          def start_new_part():
+              nonlocal parts, current_lines, current_len, current_section
+              if current_lines:
+                  parts.append("\n".join(current_lines))
+              current_lines = []
+              current_len = 0
+              current_section = None
 
-          if current_part:
-              parts.append("\n".join(current_part))
+          for section, block in blocks:
+              to_add = []
+              
+              if section != current_section:
+                  if current_lines:
+                      to_add.append("")
+                  to_add.append(section_headers[section])
+              
+              to_add.append(block)
+              add_text = "\n".join(to_add)
+              add_len = len(add_text) + 1
 
+              if current_len + add_len > MAX_LEN and current_lines:
+                  start_new_part()
+                  to_add = [section_headers[section], block]
+                  add_text = "\n".join(to_add)
+                  add_len = len(add_text) + 1
+
+              current_lines.extend(to_add)
+              current_len += add_len
+              current_section = section
+
+          if current_lines:
+              parts.append("\n".join(current_lines))
+
+          total = len(parts)
           for i, part in enumerate(parts):
-              part_header = header
-              if len(parts) > 1:
-                  part_header = f"{header}(Part {i+1}/{len(parts)})\n"
-              full_msg = part_header + part
-              Path(f"/tmp/message_part_{i}.txt").write_text(full_msg, encoding="utf-8")
+              if total > 1:
+                  header = f"{header_base} (Part {i+1}/{total})\n\n{part}"
+              else:
+                  header = f"{header_base}\n\n{part}"
+              Path(f"/tmp/message_part_{i}.txt").write_text(header, encoding="utf-8")
 
           Path("/tmp/changed.flag").write_text("true", encoding="utf-8")
-          Path("/tmp/parts_count.txt").write_text(str(len(parts)), encoding="utf-8")
+          Path("/tmp/parts_count.txt").write_text(str(total), encoding="utf-8")
 
-          if has_changes:
-              prev_path.write_text(curr_txt, encoding="utf-8")
+          prev_path.write_text(curr_txt, encoding="utf-8")
           PY
 
           CHANGED=$(cat /tmp/changed.flag 2>/dev/null || echo false)
@@ -555,10 +579,7 @@ jobs:
             sleep 10
           done
           echo "::error::POLLENS IMAGE MODELS SOURCE IS DOWN - Failed after 3 attempts"
-          echo "status=failure" >> $GITHUB_OUTPUT
-          exit 0
-
-      - name: Compare image models
+          echo "status=failure" >>       - name: Compare image models
         if: steps.fetch.outputs.status == 'success'
         id: compare
         run: |
@@ -633,61 +654,85 @@ jobs:
               Path("/tmp/parts_count.txt").write_text("0", encoding="utf-8")
               sys.exit(0)
 
-          change_lines = []
+          blocks = []
 
           if added:
-              change_lines.append("<b>+ Added models:</b>")
               for n in added:
                   m = curr_map[n]
-                  change_lines.append(f"  • <code>{n}</code> ({m.get('description','?')})")
+                  block = f"  • <code>{n}</code> ({m.get('description','?')})"
+                  blocks.append(("added", block))
 
           if removed:
-              if change_lines:
-                  change_lines.append("")
-              change_lines.append("<b>- Deleted models:</b>")
               for n in removed:
                   m = prev_map[n]
-                  change_lines.append(f"  • <code>{n}</code> ({m.get('description','?')})")
+                  block = f"  • <code>{n}</code> ({m.get('description','?')})"
+                  blocks.append(("removed", block))
 
           if modified:
-              if change_lines:
-                  change_lines.append("")
-              change_lines.append("<b>~ Updated models:</b>")
               for n in sorted(modified):
                   m = curr_map[n]
-                  change_lines.append(f"  • <code>{n}</code>:")
+                  lines = [f"  • <code>{n}</code>:"]
                   for k, ch in sorted(modified[n].items()):
-                      change_lines.append(f"      ◦ <code>{k}</code>: {ch['old']} → {ch['new']}")
+                      lines.append(f"      ◦ <code>{k}</code>: {ch['old']} → {ch['new']}")
+                  blocks.append(("modified", "\n".join(lines)))
 
-          header = "<b>🖼️ Pollinations AI Image Models Update:</b>\n"
+          header_base = "<b>🖼️ Pollinations AI Image Models Update:</b>"
+          section_headers = {
+              "added": "<b>+ Added models:</b>",
+              "removed": "<b>− Deleted models:</b>",
+              "modified": "<b>~ Updated models:</b>"
+          }
+
           parts = []
-          current_part = []
+          current_lines = []
+          current_section = None
           current_len = 0
 
-          for line in change_lines:
-              line_len = len(line) + 1
-              if current_len + line_len > MAX_LEN and current_part:
-                  parts.append("\n".join(current_part))
-                  current_part = []
-                  current_len = 0
-              current_part.append(line)
-              current_len += line_len
+          def start_new_part():
+              nonlocal parts, current_lines, current_len, current_section
+              if current_lines:
+                  parts.append("\n".join(current_lines))
+              current_lines = []
+              current_len = 0
+              current_section = None
 
-          if current_part:
-              parts.append("\n".join(current_part))
+          for section, block in blocks:
+              to_add = []
+              
+              if section != current_section:
+                  if current_lines:
+                      to_add.append("")
+                  to_add.append(section_headers[section])
+              
+              to_add.append(block)
+              add_text = "\n".join(to_add)
+              add_len = len(add_text) + 1
 
+              if current_len + add_len > MAX_LEN and current_lines:
+                  start_new_part()
+                  to_add = [section_headers[section], block]
+                  add_text = "\n".join(to_add)
+                  add_len = len(add_text) + 1
+
+              current_lines.extend(to_add)
+              current_len += add_len
+              current_section = section
+
+          if current_lines:
+              parts.append("\n".join(current_lines))
+
+          total = len(parts)
           for i, part in enumerate(parts):
-              part_header = header
-              if len(parts) > 1:
-                  part_header = f"{header}(Part {i+1}/{len(parts)})\n"
-              full_msg = part_header + part
-              Path(f"/tmp/message_part_{i}.txt").write_text(full_msg, encoding="utf-8")
+              if total > 1:
+                  header = f"{header_base} (Part {i+1}/{total})\n\n{part}"
+              else:
+                  header = f"{header_base}\n\n{part}"
+              Path(f"/tmp/message_part_{i}.txt").write_text(header, encoding="utf-8")
 
           Path("/tmp/changed.flag").write_text("true", encoding="utf-8")
-          Path("/tmp/parts_count.txt").write_text(str(len(parts)), encoding="utf-8")
+          Path("/tmp/parts_count.txt").write_text(str(total), encoding="utf-8")
 
-          if has_changes:
-              prev_path.write_text(curr_txt, encoding="utf-8")
+          prev_path.write_text(curr_txt, encoding="utf-8")
           PY
 
           CHANGED=$(cat /tmp/changed.flag 2>/dev/null || echo false)
