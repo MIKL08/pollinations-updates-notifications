@@ -362,6 +362,8 @@ jobs:
           import json, sys
           from pathlib import Path
 
+          MAX_LEN = 3500
+
           tmp = Path("/tmp/text_models.json")
           try:
               data = json.loads(tmp.read_text(encoding="utf-8"))
@@ -376,12 +378,11 @@ jobs:
           curr_txt = json.dumps(normalized, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
 
           prev_path = Path("pollens_text_models.json")
-          lines = []
 
           if not prev_path.exists():
               prev_path.write_text(curr_txt, encoding="utf-8")
               Path("/tmp/changed.flag").write_text("false", encoding="utf-8")
-              Path("/tmp/message.txt").write_text("First snapshot initialized. No notification sent.\n", encoding="utf-8")
+              Path("/tmp/parts_count.txt").write_text("0", encoding="utf-8")
               sys.exit(0)
 
           prev = json.loads(prev_path.read_text(encoding="utf-8"))
@@ -399,71 +400,94 @@ jobs:
           modified = {}
 
           def diff_dicts(o, n, prefix=""):
-            d = {}
-            all_keys = sorted(set(o.keys()) | set(n.keys()))
-            for k in all_keys:
-                if k == "created":
-                    continue
-                full_key = f"{prefix}.{k}" if prefix else k
-                ov = o.get(k)
-                nv = n.get(k)
-                if ov != nv:
-                    if isinstance(ov, dict) and isinstance(nv, dict):
-                        nested = diff_dicts(ov, nv, full_key)
-                        d.update(nested)
-                    else:
-                        d[full_key] = {"old": ov, "new": nv}
-            return d
+              d = {}
+              all_keys = sorted(set(o.keys()) | set(n.keys()))
+              for k in all_keys:
+                  if k == "created":
+                      continue
+                  full_key = f"{prefix}.{k}" if prefix else k
+                  ov = o.get(k)
+                  nv = n.get(k)
+                  if ov != nv:
+                      if isinstance(ov, dict) and isinstance(nv, dict):
+                          nested = diff_dicts(ov, nv, full_key)
+                          d.update(nested)
+                      else:
+                          d[full_key] = {"old": ov, "new": nv}
+              return d
 
           for name in common:
               d = diff_dicts(prev_map[name], curr_map[name])
               if d:
-                  modified[name]=d
+                  modified[name] = d
 
           has_changes = bool(added or removed or modified)
 
+          if not has_changes:
+              Path("/tmp/changed.flag").write_text("false", encoding="utf-8")
+              Path("/tmp/parts_count.txt").write_text("0", encoding="utf-8")
+              sys.exit(0)
+
+          change_lines = []
+
           if added:
-              lines.append("\n<b>+ Added models:</b>")
+              change_lines.append("<b>+ Added models:</b>")
               for n in added:
-                  m=curr_map[n]
-                  lines.append(f"  - <code>{n}</code> (Description: {m.get('description','?')})")
+                  m = curr_map[n]
+                  change_lines.append(f"  • <code>{n}</code> ({m.get('description','?')})")
 
           if removed:
-              lines.append("\n<b>- Deleted models:</b>")
+              if change_lines:
+                  change_lines.append("")
+              change_lines.append("<b>- Deleted models:</b>")
               for n in removed:
-                  m=prev_map[n]
-                  lines.append(f"  - <code>{n}</code> (Description: {m.get('description','?')})")
+                  m = prev_map[n]
+                  change_lines.append(f"  • <code>{n}</code> ({m.get('description','?')})")
 
           if modified:
-              lines.append("\n<b>> Updated models:</b>")
+              if change_lines:
+                  change_lines.append("")
+              change_lines.append("<b>~ Updated models:</b>")
               for n in sorted(modified):
                   m = curr_map[n]
-                  lines.append(f"  - <code>{n}</code> (Description: {m.get('description','?')}):")
-                  for k,ch in modified[n].items():
-                      lines.append(f"      • {k}: {ch['old']} → {ch['new']}")
+                  change_lines.append(f"  • <code>{n}</code>:")
+                  for k, ch in sorted(modified[n].items()):
+                      change_lines.append(f"      ◦ <code>{k}</code>: {ch['old']} → {ch['new']}")
 
-          if not has_changes:
-              lines.append("No changes found.")
+          header = "<b>💬 Pollinations AI Text Models Update:</b>\n"
+          parts = []
+          current_part = []
+          current_len = 0
 
-          Path("/tmp/message.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
-          Path("/tmp/changed.flag").write_text("true" if has_changes else "false", encoding="utf-8")
+          for line in change_lines:
+              line_len = len(line) + 1  # +1 для \n
+              if current_len + line_len > MAX_LEN and current_part:
+                  parts.append("\n".join(current_part))
+                  current_part = []
+                  current_len = 0
+              current_part.append(line)
+              current_len += line_len
+
+          if current_part:
+              parts.append("\n".join(current_part))
+
+          for i, part in enumerate(parts):
+              part_header = header
+              if len(parts) > 1:
+                  part_header = f"{header}(Part {i+1}/{len(parts)})\n"
+              full_msg = part_header + part
+              Path(f"/tmp/message_part_{i}.txt").write_text(full_msg, encoding="utf-8")
+
+          Path("/tmp/changed.flag").write_text("true", encoding="utf-8")
+          Path("/tmp/parts_count.txt").write_text(str(len(parts)), encoding="utf-8")
 
           if has_changes:
               prev_path.write_text(curr_txt, encoding="utf-8")
           PY
 
           CHANGED=$(cat /tmp/changed.flag 2>/dev/null || echo false)
-          if [ "$CHANGED" = "true" ]; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-          fi
-
-          {
-            echo 'message<<EOF'
-            cat /tmp/message.txt
-            echo EOF
-          } >> "$GITHUB_OUTPUT"
+          echo "changed=$CHANGED" >> "$GITHUB_OUTPUT"
+          echo "parts=$(cat /tmp/parts_count.txt 2>/dev/null || echo 0)" >> "$GITHUB_OUTPUT"
 
       - name: Commit updated pollens text models snapshot
         if: steps.compare.outputs.changed == 'true'
@@ -476,15 +500,23 @@ jobs:
 
       - name: Notify text model changes
         if: steps.compare.outputs.changed == 'true'
-        uses: appleboy/telegram-action@master
-        with:
-          to: ${{ env.TELEGRAM_TO_BETA }}
-          token: ${{ env.TELEGRAM_TOKEN }}
-          message: |
-            <b>💬 Pollinations AI Text Models Update:</b>
-            ${{ steps.compare.outputs.message }}
-          format: html
-          disable_web_page_preview: true
+        env:
+          TG_TOKEN: ${{ env.TELEGRAM_TOKEN }}
+          TG_CHAT: ${{ env.TELEGRAM_TO_BETA }}
+        run: |
+          PARTS=${{ steps.compare.outputs.parts }}
+          for i in $(seq 0 $((PARTS - 1))); do
+            MSG=$(cat /tmp/message_part_${i}.txt)
+            curl -s -X POST "https://api.telegram.org/bot${TG_TOKEN}/sendMessage" \
+              -H "Content-Type: application/json" \
+              -d "$(jq -n --arg chat "$TG_CHAT" --arg text "$MSG" '{
+                chat_id: $chat,
+                text: $text,
+                parse_mode: "HTML",
+                disable_web_page_preview: true
+              }')"
+            sleep 1
+          done
 
       - name: Alert text API failure
         if: steps.fetch.outputs.status == 'failure'
@@ -535,6 +567,8 @@ jobs:
           import json, sys
           from pathlib import Path
 
+          MAX_LEN = 3500
+
           tmp = Path("/tmp/image_models.json")
           try:
               data = json.loads(tmp.read_text(encoding="utf-8"))
@@ -549,12 +583,11 @@ jobs:
           curr_txt = json.dumps(normalized, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
 
           prev_path = Path("pollens_image_models.json")
-          lines = []
 
           if not prev_path.exists():
               prev_path.write_text(curr_txt, encoding="utf-8")
               Path("/tmp/changed.flag").write_text("false", encoding="utf-8")
-              Path("/tmp/message.txt").write_text("First snapshot initialized. No notification sent.\n", encoding="utf-8")
+              Path("/tmp/parts_count.txt").write_text("0", encoding="utf-8")
               sys.exit(0)
 
           prev = json.loads(prev_path.read_text(encoding="utf-8"))
@@ -572,71 +605,94 @@ jobs:
           modified = {}
 
           def diff_dicts(o, n, prefix=""):
-            d = {}
-            all_keys = sorted(set(o.keys()) | set(n.keys()))
-            for k in all_keys:
-                if k == "created":
-                    continue
-                full_key = f"{prefix}.{k}" if prefix else k
-                ov = o.get(k)
-                nv = n.get(k)
-                if ov != nv:
-                    if isinstance(ov, dict) and isinstance(nv, dict):
-                        nested = diff_dicts(ov, nv, full_key)
-                        d.update(nested)
-                    else:
-                        d[full_key] = {"old": ov, "new": nv}
-            return d
+              d = {}
+              all_keys = sorted(set(o.keys()) | set(n.keys()))
+              for k in all_keys:
+                  if k == "created":
+                      continue
+                  full_key = f"{prefix}.{k}" if prefix else k
+                  ov = o.get(k)
+                  nv = n.get(k)
+                  if ov != nv:
+                      if isinstance(ov, dict) and isinstance(nv, dict):
+                          nested = diff_dicts(ov, nv, full_key)
+                          d.update(nested)
+                      else:
+                          d[full_key] = {"old": ov, "new": nv}
+              return d
 
           for name in common:
               d = diff_dicts(prev_map[name], curr_map[name])
               if d:
-                  modified[name]=d
+                  modified[name] = d
 
           has_changes = bool(added or removed or modified)
 
+          if not has_changes:
+              Path("/tmp/changed.flag").write_text("false", encoding="utf-8")
+              Path("/tmp/parts_count.txt").write_text("0", encoding="utf-8")
+              sys.exit(0)
+
+          change_lines = []
+
           if added:
-              lines.append("\n<b>+ Added models:</b>")
+              change_lines.append("<b>+ Added models:</b>")
               for n in added:
-                  m=curr_map[n]
-                  lines.append(f"  - <code>{n}</code> (Description: {m.get('description','?')})")
+                  m = curr_map[n]
+                  change_lines.append(f"  • <code>{n}</code> ({m.get('description','?')})")
 
           if removed:
-              lines.append("\n<b>- Deleted models:</b>")
+              if change_lines:
+                  change_lines.append("")
+              change_lines.append("<b>- Deleted models:</b>")
               for n in removed:
-                  m=prev_map[n]
-                  lines.append(f"  - <code>{n}</code> (Description: {m.get('description','?')})")
+                  m = prev_map[n]
+                  change_lines.append(f"  • <code>{n}</code> ({m.get('description','?')})")
 
           if modified:
-              lines.append("\n<b>> Updated models:</b>")
+              if change_lines:
+                  change_lines.append("")
+              change_lines.append("<b>~ Updated models:</b>")
               for n in sorted(modified):
                   m = curr_map[n]
-                  lines.append(f"  - <code>{n}</code> (Description: {m.get('description','?')}):")
-                  for k,ch in modified[n].items():
-                      lines.append(f"      • {k}: {ch['old']} → {ch['new']}")
+                  change_lines.append(f"  • <code>{n}</code>:")
+                  for k, ch in sorted(modified[n].items()):
+                      change_lines.append(f"      ◦ <code>{k}</code>: {ch['old']} → {ch['new']}")
 
-          if not has_changes:
-              lines.append("No changes found.")
+          header = "<b>🖼️ Pollinations AI Image Models Update:</b>\n"
+          parts = []
+          current_part = []
+          current_len = 0
 
-          Path("/tmp/message.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
-          Path("/tmp/changed.flag").write_text("true" if has_changes else "false", encoding="utf-8")
+          for line in change_lines:
+              line_len = len(line) + 1
+              if current_len + line_len > MAX_LEN and current_part:
+                  parts.append("\n".join(current_part))
+                  current_part = []
+                  current_len = 0
+              current_part.append(line)
+              current_len += line_len
+
+          if current_part:
+              parts.append("\n".join(current_part))
+
+          for i, part in enumerate(parts):
+              part_header = header
+              if len(parts) > 1:
+                  part_header = f"{header}(Part {i+1}/{len(parts)})\n"
+              full_msg = part_header + part
+              Path(f"/tmp/message_part_{i}.txt").write_text(full_msg, encoding="utf-8")
+
+          Path("/tmp/changed.flag").write_text("true", encoding="utf-8")
+          Path("/tmp/parts_count.txt").write_text(str(len(parts)), encoding="utf-8")
 
           if has_changes:
               prev_path.write_text(curr_txt, encoding="utf-8")
           PY
 
           CHANGED=$(cat /tmp/changed.flag 2>/dev/null || echo false)
-          if [ "$CHANGED" = "true" ]; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-          fi
-
-          {
-            echo 'message<<EOF'
-            cat /tmp/message.txt
-            echo EOF
-          } >> "$GITHUB_OUTPUT"
+          echo "changed=$CHANGED" >> "$GITHUB_OUTPUT"
+          echo "parts=$(cat /tmp/parts_count.txt 2>/dev/null || echo 0)" >> "$GITHUB_OUTPUT"
 
       - name: Commit updated pollens image models snapshot
         if: steps.compare.outputs.changed == 'true'
@@ -649,15 +705,23 @@ jobs:
 
       - name: Notify image model changes
         if: steps.compare.outputs.changed == 'true'
-        uses: appleboy/telegram-action@master
-        with:
-          to: ${{ env.TELEGRAM_TO_BETA }}
-          token: ${{ env.TELEGRAM_TOKEN }}
-          message: |
-            <b>🖼️ Pollinations AI Image Models Update:</b>
-            ${{ steps.compare.outputs.message }}
-          format: html
-          disable_web_page_preview: true
+        env:
+          TG_TOKEN: ${{ env.TELEGRAM_TOKEN }}
+          TG_CHAT: ${{ env.TELEGRAM_TO_BETA }}
+        run: |
+          PARTS=${{ steps.compare.outputs.parts }}
+          for i in $(seq 0 $((PARTS - 1))); do
+            MSG=$(cat /tmp/message_part_${i}.txt)
+            curl -s -X POST "https://api.telegram.org/bot${TG_TOKEN}/sendMessage" \
+              -H "Content-Type: application/json" \
+              -d "$(jq -n --arg chat "$TG_CHAT" --arg text "$MSG" '{
+                chat_id: $chat,
+                text: $text,
+                parse_mode: "HTML",
+                disable_web_page_preview: true
+              }')"
+            sleep 1
+          done
 
       - name: Alert image source failure
         if: steps.fetch.outputs.status == 'failure'
