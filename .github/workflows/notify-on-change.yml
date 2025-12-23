@@ -363,7 +363,6 @@ jobs:
           from pathlib import Path
 
           MAX_LEN = 3500
-
           tmp = Path("/tmp/text_models.json")
           try:
               data = json.loads(tmp.read_text(encoding="utf-8"))
@@ -374,9 +373,7 @@ jobs:
           models = data.get("data", []) if isinstance(data, dict) else data
           normalized = [dict(m) for m in models]
           normalized.sort(key=lambda x: str(x.get("name","")))
-
           curr_txt = json.dumps(normalized, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
-
           prev_path = Path("pollens_text_models.json")
 
           if not prev_path.exists():
@@ -386,116 +383,83 @@ jobs:
               sys.exit(0)
 
           prev = json.loads(prev_path.read_text(encoding="utf-8"))
-
-          def to_map(items):
-              return {str(i.get("name","")): i for i in items if i.get("name")}
-
-          prev_map = to_map(prev)
-          curr_map = to_map(normalized)
+          prev_map = {str(i.get("name","")): i for i in prev if i.get("name")}
+          curr_map = {str(i.get("name","")): i for i in normalized if i.get("name")}
 
           added = sorted(set(curr_map) - set(prev_map))
           removed = sorted(set(prev_map) - set(curr_map))
           common = sorted(set(prev_map) & set(curr_map))
-
           modified = {}
 
           def diff_dicts(o, n, prefix=""):
               d = {}
-              all_keys = sorted(set(o.keys()) | set(n.keys()))
-              for k in all_keys:
-                  if k == "created":
-                      continue
+              for k in sorted(set(o.keys()) | set(n.keys())):
+                  if k == "created": continue
                   full_key = f"{prefix}.{k}" if prefix else k
-                  ov = o.get(k)
-                  nv = n.get(k)
+                  ov, nv = o.get(k), n.get(k)
                   if ov != nv:
                       if isinstance(ov, dict) and isinstance(nv, dict):
-                          nested = diff_dicts(ov, nv, full_key)
-                          d.update(nested)
+                          d.update(diff_dicts(ov, nv, full_key))
                       else:
                           d[full_key] = {"old": ov, "new": nv}
               return d
 
           for name in common:
               d = diff_dicts(prev_map[name], curr_map[name])
-              if d:
-                  modified[name] = d
+              if d: modified[name] = d
 
-          has_changes = bool(added or removed or modified)
-
-          if not has_changes:
+          if not (added or removed or modified):
               Path("/tmp/changed.flag").write_text("false", encoding="utf-8")
               Path("/tmp/parts_count.txt").write_text("0", encoding="utf-8")
               sys.exit(0)
 
           blocks = []
+          for n in added:
+              m = curr_map[n]
+              blocks.append(("added", f"  - <code>{n}</code> (Description: {m.get('description','?')})"))
+          for n in removed:
+              m = prev_map[n]
+              blocks.append(("removed", f"  - <code>{n}</code> (Description: {m.get('description','?')})"))
+          for n in sorted(modified):
+              m = curr_map[n]
+              mlines = [f"  - <code>{n}</code> (Description: {m.get('description','?')}):"]
+              for k, ch in sorted(modified[n].items()):
+                  mlines.append(f"      • {k}: {ch['old']} → {ch['new']}")
+              blocks.append(("modified", "\n".join(mlines)))
 
-          if added:
-              for n in added:
-                  m = curr_map[n]
-                  block = f"  - <code>{n}</code> (Description: {m.get('description','?')})"
-                  blocks.append(("added", block))
-
-          if removed:
-              for n in removed:
-                  m = prev_map[n]
-                  block = f"  - <code>{n}</code> (Description: {m.get('description','?')})"
-                  blocks.append(("removed", block))
-
-          if modified:
-              for n in sorted(modified):
-                  m = curr_map[n]
-                  mlines = [f"  - <code>{n}</code> (Description: {m.get('description','?')}):"]
-                  for k, ch in sorted(modified[n].items()):
-                      mlines.append(f"      • {k}: {ch['old']} → {ch['new']}")
-                  blocks.append(("modified", "\n".join(mlines)))
-
-          header_base = "<b>💬 Pollinations AI Text Models Update:</b>"
-          section_headers = {
-              "added": "\n<b>+ Added models:</b>",
-              "removed": "\n<b>- Deleted models:</b>",
-              "modified": "\n<b>&gt; Updated models:</b>"
-          }
+          header = "<b>💬 Pollinations AI Text Models Update:</b>"
+          sec_h = {"added": "\n<b>+ Added models:</b>", "removed": "\n<b>- Deleted models:</b>", "modified": "\n<b>&gt; Updated models:</b>"}
 
           parts = []
-          current_lines = []
-          current_section = None
-          current_len = 0
+          cur_lines = []
+          cur_sec = None
+          cur_len = 0
 
-          for section, block in blocks:
+          for sec, blk in blocks:
               to_add = []
-              
-              if section != current_section:
-                  to_add.append(section_headers[section])
-              
-              to_add.append(block)
-              add_text = "\n".join(to_add)
-              add_len = len(add_text) + 1
+              if sec != cur_sec:
+                  to_add.append(sec_h[sec])
+              to_add.append(blk)
+              add_len = len("\n".join(to_add)) + 1
 
-              if current_len + add_len > MAX_LEN and current_lines:
-                  parts.append("\n".join(current_lines))
-                  current_lines = []
-                  current_len = 0
-                  current_section = None
-                  to_add = [section_headers[section], block]
-                  add_text = "\n".join(to_add)
-                  add_len = len(add_text) + 1
+              if cur_len + add_len > MAX_LEN and cur_lines:
+                  parts.append("\n".join(cur_lines))
+                  cur_lines = [sec_h[sec], blk]
+                  cur_len = len("\n".join(cur_lines)) + 1
+                  cur_sec = sec
+              else:
+                  cur_lines.extend(to_add)
+                  cur_len += add_len
+                  cur_sec = sec
 
-              current_lines.extend(to_add)
-              current_len += add_len
-              current_section = section
+          if cur_lines:
+              parts.append("\n".join(cur_lines))
 
-          if current_lines:
-              parts.append("\n".join(current_lines))
-
-          total = len(parts)
-          for i, part in enumerate(parts):
-              full_msg = f"{header_base}\n{part}"
-              Path(f"/tmp/message_part_{i}.txt").write_text(full_msg, encoding="utf-8")
+          for i, p in enumerate(parts):
+              Path(f"/tmp/message_part_{i}.txt").write_text(f"{header}\n{p}", encoding="utf-8")
 
           Path("/tmp/changed.flag").write_text("true", encoding="utf-8")
-          Path("/tmp/parts_count.txt").write_text(str(total), encoding="utf-8")
-
+          Path("/tmp/parts_count.txt").write_text(str(len(parts)), encoding="utf-8")
           prev_path.write_text(curr_txt, encoding="utf-8")
           PY
 
@@ -582,7 +546,6 @@ jobs:
           from pathlib import Path
 
           MAX_LEN = 3500
-
           tmp = Path("/tmp/image_models.json")
           try:
               data = json.loads(tmp.read_text(encoding="utf-8"))
@@ -593,9 +556,7 @@ jobs:
           models = data.get("data", []) if isinstance(data, dict) else data
           normalized = [dict(m) for m in models]
           normalized.sort(key=lambda x: str(x.get("name","")))
-
           curr_txt = json.dumps(normalized, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
-
           prev_path = Path("pollens_image_models.json")
 
           if not prev_path.exists():
@@ -605,116 +566,83 @@ jobs:
               sys.exit(0)
 
           prev = json.loads(prev_path.read_text(encoding="utf-8"))
-
-          def to_map(items):
-              return {str(i.get("name","")): i for i in items if i.get("name")}
-
-          prev_map = to_map(prev)
-          curr_map = to_map(normalized)
+          prev_map = {str(i.get("name","")): i for i in prev if i.get("name")}
+          curr_map = {str(i.get("name","")): i for i in normalized if i.get("name")}
 
           added = sorted(set(curr_map) - set(prev_map))
           removed = sorted(set(prev_map) - set(curr_map))
           common = sorted(set(prev_map) & set(curr_map))
-
           modified = {}
 
           def diff_dicts(o, n, prefix=""):
               d = {}
-              all_keys = sorted(set(o.keys()) | set(n.keys()))
-              for k in all_keys:
-                  if k == "created":
-                      continue
+              for k in sorted(set(o.keys()) | set(n.keys())):
+                  if k == "created": continue
                   full_key = f"{prefix}.{k}" if prefix else k
-                  ov = o.get(k)
-                  nv = n.get(k)
+                  ov, nv = o.get(k), n.get(k)
                   if ov != nv:
                       if isinstance(ov, dict) and isinstance(nv, dict):
-                          nested = diff_dicts(ov, nv, full_key)
-                          d.update(nested)
+                          d.update(diff_dicts(ov, nv, full_key))
                       else:
                           d[full_key] = {"old": ov, "new": nv}
               return d
 
           for name in common:
               d = diff_dicts(prev_map[name], curr_map[name])
-              if d:
-                  modified[name] = d
+              if d: modified[name] = d
 
-          has_changes = bool(added or removed or modified)
-
-          if not has_changes:
+          if not (added or removed or modified):
               Path("/tmp/changed.flag").write_text("false", encoding="utf-8")
               Path("/tmp/parts_count.txt").write_text("0", encoding="utf-8")
               sys.exit(0)
 
           blocks = []
+          for n in added:
+              m = curr_map[n]
+              blocks.append(("added", f"  - <code>{n}</code> (Description: {m.get('description','?')})"))
+          for n in removed:
+              m = prev_map[n]
+              blocks.append(("removed", f"  - <code>{n}</code> (Description: {m.get('description','?')})"))
+          for n in sorted(modified):
+              m = curr_map[n]
+              mlines = [f"  - <code>{n}</code> (Description: {m.get('description','?')}):"]
+              for k, ch in sorted(modified[n].items()):
+                  mlines.append(f"      • {k}: {ch['old']} → {ch['new']}")
+              blocks.append(("modified", "\n".join(mlines)))
 
-          if added:
-              for n in added:
-                  m = curr_map[n]
-                  block = f"  - <code>{n}</code> (Description: {m.get('description','?')})"
-                  blocks.append(("added", block))
-
-          if removed:
-              for n in removed:
-                  m = prev_map[n]
-                  block = f"  - <code>{n}</code> (Description: {m.get('description','?')})"
-                  blocks.append(("removed", block))
-
-          if modified:
-              for n in sorted(modified):
-                  m = curr_map[n]
-                  mlines = [f"  - <code>{n}</code> (Description: {m.get('description','?')}):"]
-                  for k, ch in sorted(modified[n].items()):
-                      mlines.append(f"      • {k}: {ch['old']} → {ch['new']}")
-                  blocks.append(("modified", "\n".join(mlines)))
-
-          header_base = "<b>🖼️ Pollinations AI Image Models Update:</b>"
-          section_headers = {
-              "added": "\n<b>+ Added models:</b>",
-              "removed": "\n<b>- Deleted models:</b>",
-              "modified": "\n<b>&gt; Updated models:</b>"
-          }
+          header = "<b>🖼️ Pollinations AI Image Models Update:</b>"
+          sec_h = {"added": "\n<b>+ Added models:</b>", "removed": "\n<b>- Deleted models:</b>", "modified": "\n<b>&gt; Updated models:</b>"}
 
           parts = []
-          current_lines = []
-          current_section = None
-          current_len = 0
+          cur_lines = []
+          cur_sec = None
+          cur_len = 0
 
-          for section, block in blocks:
+          for sec, blk in blocks:
               to_add = []
-              
-              if section != current_section:
-                  to_add.append(section_headers[section])
-              
-              to_add.append(block)
-              add_text = "\n".join(to_add)
-              add_len = len(add_text) + 1
+              if sec != cur_sec:
+                  to_add.append(sec_h[sec])
+              to_add.append(blk)
+              add_len = len("\n".join(to_add)) + 1
 
-              if current_len + add_len > MAX_LEN and current_lines:
-                  parts.append("\n".join(current_lines))
-                  current_lines = []
-                  current_len = 0
-                  current_section = None
-                  to_add = [section_headers[section], block]
-                  add_text = "\n".join(to_add)
-                  add_len = len(add_text) + 1
+              if cur_len + add_len > MAX_LEN and cur_lines:
+                  parts.append("\n".join(cur_lines))
+                  cur_lines = [sec_h[sec], blk]
+                  cur_len = len("\n".join(cur_lines)) + 1
+                  cur_sec = sec
+              else:
+                  cur_lines.extend(to_add)
+                  cur_len += add_len
+                  cur_sec = sec
 
-              current_lines.extend(to_add)
-              current_len += add_len
-              current_section = section
+          if cur_lines:
+              parts.append("\n".join(cur_lines))
 
-          if current_lines:
-              parts.append("\n".join(current_lines))
-
-          total = len(parts)
-          for i, part in enumerate(parts):
-              full_msg = f"{header_base}\n{part}"
-              Path(f"/tmp/message_part_{i}.txt").write_text(full_msg, encoding="utf-8")
+          for i, p in enumerate(parts):
+              Path(f"/tmp/message_part_{i}.txt").write_text(f"{header}\n{p}", encoding="utf-8")
 
           Path("/tmp/changed.flag").write_text("true", encoding="utf-8")
-          Path("/tmp/parts_count.txt").write_text(str(total), encoding="utf-8")
-
+          Path("/tmp/parts_count.txt").write_text(str(len(parts)), encoding="utf-8")
           prev_path.write_text(curr_txt, encoding="utf-8")
           PY
 
