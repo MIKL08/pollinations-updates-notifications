@@ -579,7 +579,10 @@ jobs:
             sleep 10
           done
           echo "::error::POLLENS IMAGE MODELS SOURCE IS DOWN - Failed after 3 attempts"
-          echo "status=failure" >>       - name: Compare image models
+          echo "status=failure" >> $GITHUB_OUTPUT
+          exit 0
+
+      - name: Compare image models
         if: steps.fetch.outputs.status == 'success'
         id: compare
         run: |
