@@ -445,10 +445,10 @@ jobs:
           if modified:
               for n in sorted(modified):
                   m = curr_map[n]
-                  lines = [f"  • <code>{n}</code>:"]
+                  mlines = [f"  • <code>{n}</code>:"]
                   for k, ch in sorted(modified[n].items()):
-                      lines.append(f"      ◦ <code>{k}</code>: {ch['old']} → {ch['new']}")
-                  blocks.append(("modified", "\n".join(lines)))
+                      mlines.append(f"      ◦ <code>{k}</code>: {ch['old']} → {ch['new']}")
+                  blocks.append(("modified", "\n".join(mlines)))
 
           header_base = "<b>💬 Pollinations AI Text Models Update:</b>"
           section_headers = {
@@ -461,14 +461,6 @@ jobs:
           current_lines = []
           current_section = None
           current_len = 0
-
-          def start_new_part():
-              nonlocal parts, current_lines, current_len, current_section
-              if current_lines:
-                  parts.append("\n".join(current_lines))
-              current_lines = []
-              current_len = 0
-              current_section = None
 
           for section, block in blocks:
               to_add = []
@@ -483,7 +475,10 @@ jobs:
               add_len = len(add_text) + 1
 
               if current_len + add_len > MAX_LEN and current_lines:
-                  start_new_part()
+                  parts.append("\n".join(current_lines))
+                  current_lines = []
+                  current_len = 0
+                  current_section = None
                   to_add = [section_headers[section], block]
                   add_text = "\n".join(to_add)
                   add_len = len(add_text) + 1
@@ -674,10 +669,10 @@ jobs:
           if modified:
               for n in sorted(modified):
                   m = curr_map[n]
-                  lines = [f"  • <code>{n}</code>:"]
+                  mlines = [f"  • <code>{n}</code>:"]
                   for k, ch in sorted(modified[n].items()):
-                      lines.append(f"      ◦ <code>{k}</code>: {ch['old']} → {ch['new']}")
-                  blocks.append(("modified", "\n".join(lines)))
+                      mlines.append(f"      ◦ <code>{k}</code>: {ch['old']} → {ch['new']}")
+                  blocks.append(("modified", "\n".join(mlines)))
 
           header_base = "<b>🖼️ Pollinations AI Image Models Update:</b>"
           section_headers = {
@@ -690,14 +685,6 @@ jobs:
           current_lines = []
           current_section = None
           current_len = 0
-
-          def start_new_part():
-              nonlocal parts, current_lines, current_len, current_section
-              if current_lines:
-                  parts.append("\n".join(current_lines))
-              current_lines = []
-              current_len = 0
-              current_section = None
 
           for section, block in blocks:
               to_add = []
@@ -712,7 +699,10 @@ jobs:
               add_len = len(add_text) + 1
 
               if current_len + add_len > MAX_LEN and current_lines:
-                  start_new_part()
+                  parts.append("\n".join(current_lines))
+                  current_lines = []
+                  current_len = 0
+                  current_section = None
                   to_add = [section_headers[section], block]
                   add_text = "\n".join(to_add)
                   add_len = len(add_text) + 1
