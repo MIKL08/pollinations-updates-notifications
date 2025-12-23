@@ -398,15 +398,22 @@ jobs:
 
           modified = {}
 
-          def diff_dicts(o,n):
-              d={}
-              for k in sorted(set(o)|set(n)):
-                  if k == "created":
-                      continue
-                  ov=o.get(k); nv=n.get(k)
-                  if ov!=nv:
-                      d[k] = {"old":ov, "new":nv}
-              return d
+          def diff_dicts(o, n, prefix=""):
+            d = {}
+            all_keys = sorted(set(o.keys()) | set(n.keys()))
+            for k in all_keys:
+                if k == "created":
+                    continue
+                full_key = f"{prefix}.{k}" if prefix else k
+                ov = o.get(k)
+                nv = n.get(k)
+                if ov != nv:
+                    if isinstance(ov, dict) and isinstance(nv, dict):
+                        nested = diff_dicts(ov, nv, full_key)
+                        d.update(nested)
+                    else:
+                        d[full_key] = {"old": ov, "new": nv}
+            return d
 
           for name in common:
               d = diff_dicts(prev_map[name], curr_map[name])
@@ -564,15 +571,22 @@ jobs:
 
           modified = {}
 
-          def diff_dicts(o,n):
-              d={}
-              for k in sorted(set(o)|set(n)):
-                  if k == "created":
-                      continue
-                  ov=o.get(k); nv=n.get(k)
-                  if ov!=nv:
-                      d[k] = {"old":ov, "new":nv}
-              return d
+          def diff_dicts(o, n, prefix=""):
+            d = {}
+            all_keys = sorted(set(o.keys()) | set(n.keys()))
+            for k in all_keys:
+                if k == "created":
+                    continue
+                full_key = f"{prefix}.{k}" if prefix else k
+                ov = o.get(k)
+                nv = n.get(k)
+                if ov != nv:
+                    if isinstance(ov, dict) and isinstance(nv, dict):
+                        nested = diff_dicts(ov, nv, full_key)
+                        d.update(nested)
+                    else:
+                        d[full_key] = {"old": ov, "new": nv}
+            return d
 
           for name in common:
               d = diff_dicts(prev_map[name], curr_map[name])
