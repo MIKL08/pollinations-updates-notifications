@@ -37,6 +37,28 @@
     }
   },
   {
+    "aliases": [
+      "gpt-image-1.5",
+      "gpt-image-large"
+    ],
+    "description": "GPT Image 1.5 - OpenAI's advanced image generation model",
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "name": "gptimage-large",
+    "output_modalities": [
+      "image"
+    ],
+    "pricing": {
+      "completionImageTokens": 3.2e-05,
+      "currency": "pollen",
+      "promptCachedTokens": 2e-06,
+      "promptImageTokens": 8e-06,
+      "promptTextTokens": 8e-06
+    }
+  },
+  {
     "aliases": [],
     "description": "Kontext - Context-aware image generation",
     "input_modalities": [
