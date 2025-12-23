@@ -177,7 +177,7 @@ jobs:
           to: ${{ env.TELEGRAM_TO_TEXT }}
           token: ${{ env.TELEGRAM_TOKEN }}
           message: |
-            <b>💬 Pollinations AI Text Models Update:</b>
+            <b>📜 Pollinations AI (Legacy) Text Models Update:</b>
             ${{ steps.compare.outputs.message }}
           format: html
 
@@ -309,7 +309,7 @@ jobs:
           to: ${{ env.TELEGRAM_TO_IMAGE }}
           token: ${{ env.TELEGRAM_TOKEN }}
           message: |
-            <b>🎨 Pollinations AI Image Models Update:</b>
+            <b>📠 Pollinations AI (Legacy) Image Models Update:</b>
             ${{ steps.compare.outputs.message }}
           format: html
 
@@ -473,7 +473,7 @@ jobs:
           to: ${{ env.TELEGRAM_TO_BETA }}
           token: ${{ env.TELEGRAM_TOKEN }}
           message: |
-            <b>🛠️ Pollinations AI (<a href="https://enter.pollinations.ai/">Beta with pollens system</a>) Text Models Update:</b>
+            <b>💬 Pollinations AI Text Models Update:</b>
             ${{ steps.compare.outputs.message }}
           format: html
           disable_web_page_preview: true
@@ -638,7 +638,7 @@ jobs:
           to: ${{ env.TELEGRAM_TO_BETA }}
           token: ${{ env.TELEGRAM_TOKEN }}
           message: |
-            <b>⚙️ Pollinations AI (<a href="https://enter.pollinations.ai/">Beta with pollens system</a>) Image Models Update:</b>
+            <b>🖼️ Pollinations AI Image Models Update:</b>
             ${{ steps.compare.outputs.message }}
           format: html
           disable_web_page_preview: true
