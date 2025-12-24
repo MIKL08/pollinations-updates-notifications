@@ -86,7 +86,6 @@
   {
     "aliases": [
       "deepseek-v3",
-      "deepseek-v3.2",
       "deepseek-reasoning"
     ],
     "description": "DeepSeek V3.2 - Efficient Reasoning & Agentic AI",
