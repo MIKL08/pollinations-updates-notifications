@@ -34,47 +34,6 @@
   },
   {
     "aliases": [
-      "deepseek-v3",
-      "deepseek-v3.1",
-      "deepseek-reasoning",
-      "deepseek-r1-0528"
-    ],
-    "audio": false,
-    "community": false,
-    "description": "DeepSeek V3.1",
-    "input_modalities": [
-      "text"
-    ],
-    "maxInputChars": 10000,
-    "name": "deepseek",
-    "output_modalities": [
-      "text"
-    ],
-    "reasoning": true,
-    "tier": "seed",
-    "tools": true,
-    "vision": false
-  },
-  {
-    "aliases": [],
-    "audio": false,
-    "community": true,
-    "description": "Evil",
-    "input_modalities": [
-      "image",
-      "text"
-    ],
-    "name": "evil",
-    "output_modalities": [
-      "text"
-    ],
-    "tier": "seed",
-    "tools": true,
-    "uncensored": true,
-    "vision": true
-  },
-  {
-    "aliases": [
       "gemini-2.5-flash-lite"
     ],
     "audio": false,
@@ -88,27 +47,7 @@
     "output_modalities": [
       "text"
     ],
-    "tier": "seed",
-    "tools": true,
-    "vision": true
-  },
-  {
-    "aliases": [
-      "searchgpt",
-      "geminisearch"
-    ],
-    "audio": false,
-    "community": false,
-    "description": "Gemini 2.5 Flash Lite with Google Search",
-    "input_modalities": [
-      "image",
-      "text"
-    ],
-    "name": "gemini-search",
-    "output_modalities": [
-      "text"
-    ],
-    "tier": "seed",
+    "tier": "anonymous",
     "tools": true,
     "vision": true
   },
@@ -144,7 +83,7 @@
     "output_modalities": [
       "text"
     ],
-    "tier": "seed",
+    "tier": "anonymous",
     "tools": true,
     "vision": false
   },
@@ -186,77 +125,6 @@
     ],
     "tier": "anonymous",
     "tools": true,
-    "vision": true
-  },
-  {
-    "aliases": [
-      "qwen2.5-coder-32b-instruct"
-    ],
-    "audio": false,
-    "community": false,
-    "description": "Qwen 2.5 Coder 32B",
-    "input_modalities": [
-      "text"
-    ],
-    "name": "qwen-coder",
-    "output_modalities": [
-      "text"
-    ],
-    "tier": "flower",
-    "tools": true,
-    "vision": false
-  },
-  {
-    "aliases": [
-      "llama-roblox",
-      "llama-fast-roblox"
-    ],
-    "audio": false,
-    "community": false,
-    "description": "Llama 3.1 8B Instruct",
-    "input_modalities": [
-      "text"
-    ],
-    "name": "roblox-rp",
-    "output_modalities": [
-      "text"
-    ],
-    "tier": "seed",
-    "tools": true,
-    "vision": false
-  },
-  {
-    "aliases": [],
-    "audio": false,
-    "community": true,
-    "description": "Rtist",
-    "input_modalities": [
-      "text"
-    ],
-    "name": "rtist",
-    "output_modalities": [
-      "text"
-    ],
-    "tier": "seed",
-    "tools": true,
-    "vision": false
-  },
-  {
-    "aliases": [],
-    "audio": false,
-    "community": true,
-    "description": "Unity Unrestricted Agent",
-    "input_modalities": [
-      "image",
-      "text"
-    ],
-    "name": "unity",
-    "output_modalities": [
-      "text"
-    ],
-    "tier": "seed",
-    "tools": true,
-    "uncensored": true,
     "vision": true
   }
 ]
