@@ -89,42 +89,24 @@
   },
   {
     "aliases": [
-      "gpt-5-mini"
+      "openai",
+      "gpt-oss",
+      "gpt-oss-20b",
+      "ovh-reasoning"
     ],
     "audio": false,
     "community": false,
-    "description": "OpenAI GPT-5 Nano",
+    "description": "GPT-OSS 20B Reasoning LLM (OVH)",
     "input_modalities": [
-      "image",
       "text"
     ],
-    "maxInputChars": 7000,
-    "name": "openai",
-    "output_modalities": [
-      "text"
-    ],
-    "tier": "anonymous",
-    "tools": true,
-    "vision": true
-  },
-  {
-    "aliases": [
-      "gpt-5-nano"
-    ],
-    "audio": false,
-    "community": false,
-    "description": "OpenAI GPT-4.1 Nano",
-    "input_modalities": [
-      "image",
-      "text"
-    ],
-    "maxInputChars": 5000,
     "name": "openai-fast",
     "output_modalities": [
       "text"
     ],
+    "reasoning": true,
     "tier": "anonymous",
     "tools": true,
-    "vision": true
+    "vision": false
   }
 ]
